@@ -23,15 +23,17 @@ parametro: VAR? tipo ID;
 tipoRetorno: ENTERO | REAL | BOOLEANO | CARACTER | ID | CADENA TKN_OPENING_BRA TKN_INTEGER TKN_CLOSING_BRA;
 sentencia:
       idConIndexYAtributo TKN_ASSIGN exp #sentenceAssign
-      |ESCRIBA exp (TKN_COMMA exp)* #sentenceWrite
-      |LEA idConIndexYAtributo (TKN_COMMA idConIndexYAtributo)* #sentenceRead
+      |ESCRIBA expEscriba (',' expEscriba)* #sentenceWrite
+      |LEA idLectura (TKN_COMMA idLectura)* #sentenceRead
       |SI expCondicional ENTONCES sentencia* sino?  FIN SI  #conditional
-      |MIENTRAS expCondicional HAGA sentencia* FIN MIENTRAS#while
-      |REPITA sentencia* HASTA expCondicional #doWhile
+      |MIENTRAS expCondicional HAGA sentencia* FIN MIENTRAS#while //Sergio
+      |REPITA sentencia* HASTA expCondicional #doWhile //Sergio
       |PARA paraIniCon HAGA sentencia* FIN PARA #for
-      |LLAMAR subrutinaLlamada #callFunction
+      |LLAMAR subrutinaLlamada #callFunction //Sergio
       |CASO idConIndexYAtributo (expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*)* (SINO TKN_COLON sentencia*)? FIN CASO  #switch
 ;
+idLectura: idConIndexYAtributo; //new
+expEscriba: exp;    //new
 expLiteral: TKN_INTEGER| TKN_STRING|TKN_CHAR|TKN_REAL| VERDADERO | FALSO;
 subrutinaLlamada: ID argumentos?| NUEVA_LINEA;
 argumentos: TKN_OPENING_PAR (exp (TKN_COMMA exp)* )? TKN_CLOSING_PAR;
