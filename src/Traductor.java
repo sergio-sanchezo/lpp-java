@@ -4,7 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 public class Traductor extends GramaticaBaseListener {
+    private void printTab(){
+        for(int i=0;i<tab;i++){
+            System.out.print("\t");
+        }
+    }
     private String idFor=""; //Usado para almacenar el valor del id del for
+    private int tab=2;
     private Map<String,Integer> datatype=new HashMap<String,Integer>();
     //1: string,2:char,  3: double, 4: int, 5: boolean,
     final private Map<Integer, String> KEYWORDS = new HashMap<Integer, String>(){{
@@ -70,7 +76,12 @@ public class Traductor extends GramaticaBaseListener {
 
     }
     //Sentences
+
     //Assign
+    @Override
+    public void enterSentenceAssign(GramaticaParser.SentenceAssignContext ctx){
+        printTab();
+    }
     @Override
     public void exitSentenceAssign(GramaticaParser.SentenceAssignContext ctx){
         System.out.println(";");
@@ -82,6 +93,8 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterExpEscriba(GramaticaParser.ExpEscribaContext ctx){
+
+        printTab();
         System.out.print("System.out.print(");
     }
     @Override
@@ -90,9 +103,10 @@ public class Traductor extends GramaticaBaseListener {
     }
     //Read
     //Es necesario en el flujo inicial definir el scanner para evitar conflictos
-    @Override
-    public void enterSentenceRead(GramaticaParser.SentenceReadContext ctx){
 
+    @Override
+    public void enterIdLectura(GramaticaParser.IdLecturaContext ctx){
+        printTab();
     }
     @Override
     public void exitIdLectura(GramaticaParser.IdLecturaContext ctx){
@@ -113,12 +127,17 @@ public class Traductor extends GramaticaBaseListener {
                     System.out.println("scanner.nextLine()");
 
             }
+        }else{
+            System.out.println();
         }
     }
+
 
     //if statement
     @Override
     public void enterConditional(GramaticaParser.ConditionalContext ctx){
+        printTab();
+        tab++;
         System.out.print("if "); //Manejo
     }
     @Override
@@ -131,15 +150,22 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void exitConditional(GramaticaParser.ConditionalContext ctx){
+        tab--;
+        printTab();
         System.out.println("}");
     }
     @Override
     public void enterSino(GramaticaParser.SinoContext ctx){
+        tab--;
+        printTab();
+        tab++;
         System.out.println("}else{");
     }
     //for statement
     @Override
     public void enterFor(GramaticaParser.ForContext ctx){
+        printTab();
+        tab++;
         System.out.print("for");
     }
     @Override
@@ -157,11 +183,14 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void exitFor(GramaticaParser.ForContext ctx){
+        tab--;
+        printTab();
         System.out.println("}");
     }
     //Switch statement
     @Override
     public void enterSwitch(GramaticaParser.SwitchContext ctx){
+        printTab();
         System.out.print("switch");
     }
     @Override
@@ -171,9 +200,13 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void exitIdCaso(GramaticaParser.IdCasoContext ctx){
         System.out.println("){");
+        tab+=2;
     }
     @Override
     public void enterExpLiteral(GramaticaParser.ExpLiteralContext ctx){
+        tab--;
+        printTab();
+        tab++;
         System.out.print("case ");
     }
     @Override
@@ -186,10 +219,15 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterSinoCaso(GramaticaParser.SinoCasoContext ctx){
+        tab--;
+        printTab();
+        tab++;
         System.out.print("default");
     }
     @Override
     public void exitSwitch(GramaticaParser.SwitchContext ctx){
+        tab-=2;
+        printTab();
         System.out.println("}");
     }
     //Terminal handle
