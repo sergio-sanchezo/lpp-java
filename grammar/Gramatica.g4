@@ -34,10 +34,11 @@ sentencia:
 ;
 idLectura: idConIndexYAtributo; //new
 expEscriba: exp;    //new
+hastaPara: HASTA;
 expLiteral: TKN_INTEGER| TKN_STRING|TKN_CHAR|TKN_REAL| VERDADERO | FALSO;
 subrutinaLlamada: ID argumentos?| NUEVA_LINEA;
 argumentos: TKN_OPENING_PAR (exp (TKN_COMMA exp)* )? TKN_CLOSING_PAR;
-paraIniCon : idConIndexYAtributo TKN_ASSIGN exp HASTA exp; //Inicialización e incremento
+paraIniCon : idConIndexYAtributo TKN_ASSIGN exp hastaPara exp; //Inicialización e incremento
 expCondicional: exp; //se usa expresión aparte para facilitar traducción
 sino: SINO sentencia*; //Se hizo regla aparte por facilidad de la traducción (corchetes)
 idConIndexYAtributo: ID (indexYAtributo|argumentos);
