@@ -30,12 +30,16 @@ sentencia:
       |REPITA sentencia* HASTA expCondicional #doWhile //Sergio
       |PARA paraIniCon HAGA sentencia* FIN PARA #for
       |LLAMAR subrutinaLlamada #callFunction //Sergio
-      |CASO idConIndexYAtributo (expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*)* (SINO TKN_COLON sentencia*)? FIN CASO  #switch
+      |CASO  idCaso (expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
 ;
+
+idCaso: idConIndexYAtributo;
 idLectura: idConIndexYAtributo; //new
 expEscriba: exp;    //new
 hastaPara: HASTA;
 expLiteral: TKN_INTEGER| TKN_STRING|TKN_CHAR|TKN_REAL| VERDADERO | FALSO;
+colonCaso: TKN_COLON;
+sinoCaso: SINO;
 subrutinaLlamada: ID argumentos?| NUEVA_LINEA;
 argumentos: TKN_OPENING_PAR (exp (TKN_COMMA exp)* )? TKN_CLOSING_PAR;
 paraIniCon : idConIndexYAtributo TKN_ASSIGN exp hastaPara exp; //Inicialización e incremento
