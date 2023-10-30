@@ -28,7 +28,7 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.SI,"");
         put(GramaticaLexer.SINO,""); //Sujeto a cambios
         put(GramaticaLexer.ENTONCES,"{\n");
-        put(GramaticaLexer.CASO,"switch"); //Pendiente de complementar
+        put(GramaticaLexer.CASO,""); //Pendiente de complementar
         put(GramaticaLexer.MIENTRAS,"while");
         put(GramaticaLexer.HAGA,"{\n"); //Pendiente de complementar
         put(GramaticaLexer.REPITA,""); //completar
@@ -43,13 +43,14 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.LLAMAR,"");
         put(GramaticaLexer.TKN_ASSIGN,"= ");
         put(GramaticaLexer.TKN_PERIOD,".");
-        put(GramaticaLexer.TKN_COMMA,""); //Sujeto a modificaciones
+        put(GramaticaLexer.TKN_COMMA,""); //No tocar xd
         put(GramaticaLexer.TKN_OPENING_BRA,""); //Por cuestiones de matrices
         put(GramaticaLexer.TKN_CLOSING_BRA,"");
         put(GramaticaLexer.TKN_OPENING_PAR,"");
         put(GramaticaLexer.TKN_CLOSING_PAR,"");
         put(GramaticaLexer.TKN_NEQ,"!=");
         put(GramaticaLexer.TKN_EQUAL,"==");
+        put(GramaticaLexer.TKN_COLON,"");
 
     }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
@@ -69,6 +70,11 @@ public class Traductor extends GramaticaBaseListener {
 
     }
     //Sentences
+    //Assign
+    @Override
+    public void exitSentenceAssign(GramaticaParser.SentenceAssignContext ctx){
+        System.out.println(";");
+    }
     //Write
     @Override
     public void enterSentenceWrite(GramaticaParser.SentenceWriteContext ctx){
@@ -151,6 +157,39 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void exitFor(GramaticaParser.ForContext ctx){
+        System.out.println("}");
+    }
+    //Switch statement
+    @Override
+    public void enterSwitch(GramaticaParser.SwitchContext ctx){
+        System.out.print("switch");
+    }
+    @Override
+    public void enterIdCaso(GramaticaParser.IdCasoContext ctx){
+        System.out.print("(");
+    }
+    @Override
+    public void exitIdCaso(GramaticaParser.IdCasoContext ctx){
+        System.out.println("){");
+    }
+    @Override
+    public void enterExpLiteral(GramaticaParser.ExpLiteralContext ctx){
+        System.out.print("case ");
+    }
+    @Override
+    public void exitExpLiteral(GramaticaParser.ExpLiteralContext ctx){
+        System.out.println(":");
+    }
+    @Override
+    public void enterColonCaso(GramaticaParser.ColonCasoContext ctx){
+        System.out.println(":");
+    }
+    @Override
+    public void enterSinoCaso(GramaticaParser.SinoCasoContext ctx){
+        System.out.print("default");
+    }
+    @Override
+    public void exitSwitch(GramaticaParser.SwitchContext ctx){
         System.out.println("}");
     }
     //Terminal handle
