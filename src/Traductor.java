@@ -24,9 +24,9 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.OR,"| ");
         put(GramaticaLexer.LEA,"");
         put(GramaticaLexer.NUEVA_LINEA,"");
-        put(GramaticaLexer.SI,"if");
-        put(GramaticaLexer.SINO,"else"); //Sujeto a cambios
-        put(GramaticaLexer.ENTONCES,""); //Completar, puede ser
+        put(GramaticaLexer.SI,"");
+        put(GramaticaLexer.SINO,""); //Sujeto a cambios
+        put(GramaticaLexer.ENTONCES,"{\n");
         put(GramaticaLexer.CASO,"switch"); //Pendiente de complementar
         put(GramaticaLexer.MIENTRAS,"while");
         put(GramaticaLexer.HAGA,""); //Pendiente de complementar
@@ -48,11 +48,23 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.TKN_OPENING_PAR,"");
         put(GramaticaLexer.TKN_CLOSING_PAR,"");
         put(GramaticaLexer.TKN_NEQ,"!=");
+        put(GramaticaLexer.TKN_EQUAL,"==");
 
     }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
     @Override
-    public void enterS(GramaticaParser.SContext ctx) {
+    public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaración de variables, etc
+        System.out.println("import java.util.Scanner;");
+        System.out.println("class Main {");
+        System.out.println("\tprivate static Scanner scanner=new Scanner(System.in);");
+        System.out.println("\tpublic static void main(String[] args) {");
+        //Falta scanner y demas librerias necesarias
+
+    }
+    @Override
+    public void exitS(GramaticaParser.SContext ctx){
+        System.out.println("\t}");
+        System.out.println("}");
 
     }
     //Sentences
@@ -79,28 +91,47 @@ public class Traductor extends GramaticaBaseListener {
         boolean exist;
         int tipo=5;
         System.out.print("=");
-        exist=datatype.containsKey(ctx.idConIndexYAtributo().ID().getText());
-        if(exist){
+        if(datatype.containsKey(ctx.idConIndexYAtributo().ID().getText())){
             tipo=datatype.get(ctx.idConIndexYAtributo().ID().getText());
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
                 case 1:
-                    System.out.print("Integer.parseInt(");
+                    System.out.print("Integer.nextInt(");
                 case 2:
-                    System.out.print(""); //completar
+                    System.out.print("scanner.nextDouble()"); //completar
                 case 3:
-                    System.out.print(""); //completar
+                    System.out.print("scanner.nextBoolean()"); //completar
                 case 4:
-                    System.out.print(""); //completar
+                    System.out.print("scanner.next()"); //completar
+                case 5:
+                    System.out.println("scanner.nextLine()");
 
             }
         }
-        System.out.print("scanner.nextLine()");
-        if(exist & tipo<5){
-            System.out.println(")"); //Cerrar parentesis del parseo
-        }else{
-            System.out.println();
-        }
     }
+
+    //if statement
+    @Override
+    public void enterConditional(GramaticaParser.ConditionalContext ctx){
+        System.out.print("if "); //Manejo
+    }
+    @Override
+    public void enterExpCondicional(GramaticaParser.ExpCondicionalContext ctx){
+        System.out.print("(");
+    }
+    @Override
+    public void exitExpCondicional(GramaticaParser.ExpCondicionalContext ctx){
+        System.out.print(")");
+    }
+    @Override
+    public void exitConditional(GramaticaParser.ConditionalContext ctx){
+        System.out.println("}");
+    }
+    @Override
+    public void enterSino(GramaticaParser.SinoContext ctx){
+        System.out.println("}else{");
+    }
+
+    //Terminal handle
     @Override
     public void visitTerminal(TerminalNode node){
         String text=node.getText();
