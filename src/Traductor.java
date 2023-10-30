@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 public class Traductor extends GramaticaBaseListener {
+    private String idFor=""; //Usado para almacenar el valor del id del for
     private Map<String,Integer> datatype=new HashMap<String,Integer>();
     //1: string,2:char,  3: double, 4: int, 5: boolean,
     final private Map<Integer, String> KEYWORDS = new HashMap<Integer, String>(){{
@@ -29,10 +30,10 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.ENTONCES,"{\n");
         put(GramaticaLexer.CASO,"switch"); //Pendiente de complementar
         put(GramaticaLexer.MIENTRAS,"while");
-        put(GramaticaLexer.HAGA,""); //Pendiente de complementar
+        put(GramaticaLexer.HAGA,"{\n"); //Pendiente de complementar
         put(GramaticaLexer.REPITA,""); //completar
         put(GramaticaLexer.HASTA,"");
-        put(GramaticaLexer.PARA,"for"); //completar
+        put(GramaticaLexer.PARA,""); //
         put(GramaticaLexer.PROCEDIMIENTO,"");
         put(GramaticaLexer.VAR,""); //Completar
         put(GramaticaLexer.FUNCION,"");
@@ -77,6 +78,7 @@ public class Traductor extends GramaticaBaseListener {
     public void enterExpEscriba(GramaticaParser.ExpEscribaContext ctx){
         System.out.print("System.out.print(");
     }
+    @Override
     public void exitExpEscriba(GramaticaParser.ExpEscribaContext ctx){
         System.out.println(");");
     }
@@ -129,7 +131,28 @@ public class Traductor extends GramaticaBaseListener {
     public void enterSino(GramaticaParser.SinoContext ctx){
         System.out.println("}else{");
     }
-
+    //for statement
+    @Override
+    public void enterFor(GramaticaParser.ForContext ctx){
+        System.out.print("for");
+    }
+    @Override
+    public void enterParaIniCon(GramaticaParser.ParaIniConContext ctx){
+        System.out.print("(");
+        idFor=ctx.idConIndexYAtributo().getText(); //Provisional, se necesita manejo de index y atributo
+    }
+    @Override
+    public void enterHastaPara(GramaticaParser.HastaParaContext ctx){
+        System.out.printf("; %s <=",idFor);
+    }
+    @Override
+    public void exitParaIniCon(GramaticaParser.ParaIniConContext ctx){
+        System.out.printf("; %s++)",idFor);
+    }
+    @Override
+    public void exitFor(GramaticaParser.ForContext ctx){
+        System.out.println("}");
+    }
     //Terminal handle
     @Override
     public void visitTerminal(TerminalNode node){
