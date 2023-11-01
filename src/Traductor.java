@@ -112,7 +112,6 @@ public class Traductor extends GramaticaBaseListener {
     public void exitIdLectura(GramaticaParser.IdLecturaContext ctx){
         int tipo;
         System.out.print("=");
-        datatype.put("a",1);
         if(datatype.containsKey(ctx.idConIndexYAtributo().ID().getText())){
             tipo=datatype.get(ctx.idConIndexYAtributo().ID().getText());
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
