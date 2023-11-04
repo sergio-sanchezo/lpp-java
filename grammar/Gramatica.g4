@@ -36,10 +36,11 @@ sentencia:
       |REPITA sentencia* HASTA doWhileCon #doWhile //Sergio
       |PARA paraIniCon HAGA sentencia* FIN PARA #for
       |LLAMAR subrutinaLlamada #callFunction //Sergio
-      |CASO  idCaso (expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
+      |CASO  idCaso (cuerpoCaso)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
 ;
 
 idCaso: idConIndexYAtributo;
+cuerpoCaso: expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*;
 idLectura: idConIndexYAtributo; //new
 expEscriba: exp;    //new
 hastaPara: HASTA;
