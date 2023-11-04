@@ -13,14 +13,17 @@ public class Traductor extends GramaticaBaseListener {
     private int tab=2;
     private Map<String,Integer> datatype=new HashMap<String,Integer>();
     //1: string,2:char,  3: double, 4: int, 5: boolean,
+
+
+
     final private Map<Integer, String> KEYWORDS = new HashMap<Integer, String>(){{
         put(GramaticaLexer.INICIO,"");
         put(GramaticaLexer.FIN,"");
-        put(GramaticaLexer.ENTERO,"int ");
-        put(GramaticaLexer.REAL,"double ");
-        put(GramaticaLexer.BOOLEANO,"boolean ");
-        put(GramaticaLexer.CARACTER,"char ");
-        put(GramaticaLexer.CADENA,"String ");
+        put(GramaticaLexer.ENTERO,"int");
+        put(GramaticaLexer.REAL,"double");
+        put(GramaticaLexer.BOOLEANO,"boolean");
+        put(GramaticaLexer.CARACTER,"char");
+        put(GramaticaLexer.CADENA,"String");
         put(GramaticaLexer.VERDADERO,"true ");
         put(GramaticaLexer.FALSO,"false ");
         put(GramaticaLexer.DIV,"pendiente "); //Pendiente
@@ -59,7 +62,62 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.TKN_COLON,"");
 
     }};
+
+    final private Map<String, String> tipos = new HashMap<String, String>(){{
+        put("entero","int");
+        put("real","double");
+        put("booleano","boolean");
+        put("caracter","char");
+        put("cadena","String");
+    }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
+    @Override
+    public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
+        printTab();
+        String var = ctx.tipo().getText();
+        if(tipos.containsKey(var)){
+            var = tipos.get(var);
+        }
+        if(ctx.TKN_INTEGER().size()==1){
+            System.out.println(var + "[] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) +"]"+ ";");
+        }else if (ctx.TKN_INTEGER().size()==2){
+            System.out.println(var + "[][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) + "]"+ "[" +ctx.TKN_INTEGER(1)+ "]"+ ";");
+        }else if (ctx.TKN_INTEGER().size()==3) {
+            System.out.println(var + "[][][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0)+"]" + "[" +ctx.TKN_INTEGER(1)+ "]" + "[" + ctx.TKN_INTEGER(2) +"]"+ ";");
+        }
+    }
+
+
+    @Override
+    public void enterDecCommaId( GramaticaParser.DecCommaIdContext ctx) {
+        int tam = ctx.ID().size();
+        for(int i  = 0; i <tam ; i++){
+            System.out.print(", "+ctx.ID().get(i).getText());
+        }
+    }
+
+    @Override
+    public void enterDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
+        printTab();
+        String var = ctx.tipo().getText();
+        if(var.equals("entero")){
+            var = "int";
+        }else if(var.equals("real")){
+            var = "double";
+        }else if (var.equals("booleano")) {
+            var = "boolean";
+        }else if (var.equals("caracter")){
+            var = "char";
+        }else if (var.equals("cadena")){
+            var = "String";
+        }
+        System.out.print(var + " " + ctx.ID().getText());
+    }
+    @Override
+    public void exitDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
+        System.out.println(";");
+    }
+
     @Override
     public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaración de variables, etc
         System.out.println("import java.util.Scanner;");
@@ -67,13 +125,11 @@ public class Traductor extends GramaticaBaseListener {
         System.out.println("\tprivate static Scanner scanner=new Scanner(System.in);");
         System.out.println("\tpublic static void main(String[] args) {");
         //Falta scanner y demas librerias necesarias
-
     }
     @Override
     public void exitS(GramaticaParser.SContext ctx){
         System.out.println("\t}");
         System.out.println("}");
-
     }
     //Sentences
 
@@ -245,7 +301,7 @@ public class Traductor extends GramaticaBaseListener {
         }
 
 
-        System.out.print(text); //+,-,*,/,...
+        //System.out.print(text); //+,-,*,/,...
     }
 
 

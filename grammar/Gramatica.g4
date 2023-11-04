@@ -2,19 +2,20 @@ grammar Gramatica;
 //Reglas gramticales
 s: declaracionesR declaracionesV declaracionesFP INICIO sentencia* FIN;
 declaracionesR: declaracionR*;
-declaracionesV:declaracionV*;
+declaracionesV:(declaracionV | declaracionArray)* ;
 declaracionesFP: (declaracionF|declaracionP)*;
 declaracionR: REGISTRO ID atributos FIN REGISTRO;
 atributos: declaracionV* ;
-declaracionV: tipo ID (TKN_COMMA ID)*;
+decCommaId: (TKN_COMMA ID)*;
+declaracionV: tipo ID decCommaId;
+declaracionArray: ARREGLO TKN_OPENING_BRA TKN_INTEGER (TKN_COMMA TKN_INTEGER)* TKN_CLOSING_BRA DE tipo ID;
 tipo: ENTERO|
        REAL|
        BOOLEANO|
        CARACTER|
        CADENA TKN_OPENING_BRA TKN_INTEGER TKN_CLOSING_BRA|
-       tipoArreglo|
        ID;
-tipoArreglo: ARREGLO TKN_OPENING_BRA TKN_INTEGER (TKN_COMMA TKN_INTEGER)* TKN_CLOSING_BRA DE tipo;
+
 declaracionF: FUNCION ID parametrosFP? TKN_COLON tipoRetorno declaracionV* sentencia* (RETORNE exp)? FIN; //Incluye declaraciones que son iguales a las del main, y puede o no tener parametros, al igual que retorne
 declaracionP:PROCEDIMIENTO ID parametrosFP? declaracionV* sentencia* FIN;
 parametrosFP: TKN_OPENING_PAR listaParametrosFP TKN_CLOSING_PAR;
