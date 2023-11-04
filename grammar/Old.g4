@@ -1,4 +1,4 @@
-grammar Gramatica;
+grammar Old;
 //Reglas gramticales
 s: declaracionesR declaracionesV declaracionesFP INICIO sentencia* FIN;
 declaracionesR: declaracionR*;
@@ -42,7 +42,7 @@ expLiteral: TKN_INTEGER| TKN_STRING|TKN_CHAR|TKN_REAL| VERDADERO | FALSO;
 colonCaso: TKN_COLON;
 sinoCaso: SINO;
 subrutinaLlamada: ID argumentos?| NUEVA_LINEA;
-argumentos: TKN_OPENING_PAR (exp) TKN_CLOSING_PAR;
+argumentos: TKN_OPENING_PAR (exp (TKN_COMMA exp)* )? TKN_CLOSING_PAR;
 paraIniCon : idConIndexYAtributo TKN_ASSIGN exp hastaPara exp; //Inicialización e incremento
 expCondicional: exp; //se usa expresión aparte para facilitar traducción
 sino: SINO sentencia*; //Se hizo regla aparte por facilidad de la traducción (corchetes)
@@ -51,25 +51,30 @@ indexYAtributo: indexAcceso* atributo*;
 indexAcceso: TKN_OPENING_BRA TKN_INTEGER listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
 listaIndex:',' TKN_INTEGER; //Acceso matriz de varias dimensiones (no se usa TKN_COMMA para facilitar la traducción)
 atributo: TKN_PERIOD ID indexYAtributo;
-
-listaExpr
-    : expr ( ',' expr )*
-    ;
-exp: expr*;
-expr
-    : '(' expr ')'
-    | expLiteral
-    | ID
-    | '-' expr
-    |<assoc=right> expr '^' expr
-    | expr ( TKN_TIMES | TKN_DIV | DIV| MOD ) expr
-    | expr ( TKN_PLUS | TKN_MINUS ) expr
-    | expr ( TKN_EQUAL | TKN_NEQ | TKN_LEQ | TKN_GEP | TKN_LESS |TKN_GREATER ) expr
-    | expr AND expr
-    | expr OR expr
-    ;
-
-
+exp: expRelacional expAux?; //Completar
+expAux: operadorLogico expRelacional expAux?;
+expRelacional: expPotencia expRelacionalAux?;
+expRelacionalAux:operadorRelacional expPotencia;
+expPotencia: expPlusMinus expPotenciaAux?;
+expPotenciaAux: TKN_POWER expPlusMinus expPotenciaAux?;
+expPlusMinus: expMultiDiv expPlusMinusAux?;
+expPlusMinusAux: plusMinus expMultiDiv expPlusMinusAux?;
+expMultiDiv: expDivEntera expMultiDivAux?;
+expMultiDivAux: multiDiv expDivEntera expMultiDivAux?;
+expDivEntera: expMod expDivEnteraAux?;
+expDivEnteraAux: DIV expMod expDivEnteraAux?;
+expMod: expSign expModAux?;
+expModAux: MOD expSign expModAux?;
+expSign: TKN_MINUS? expBase;
+expBase: TKN_OPENING_PAR exp TKN_CLOSING_PAR|
+         TKN_INTEGER|
+         TKN_STRING|
+         TKN_REAL|
+         TKN_CHAR|
+         VERDADERO|
+         FALSO|
+         idConIndexYAtributo
+;
 //Operadores logicos y relacionales
 operadorRelacional: TKN_EQUAL|TKN_NEQ|TKN_LEQ|TKN_LESS|TKN_GEP|TKN_GREATER;
 operadorLogico: AND|OR;
