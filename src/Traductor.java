@@ -150,6 +150,10 @@ public class Traductor extends GramaticaBaseListener {
     public void exitSentenceAssign(GramaticaParser.SentenceAssignContext ctx){
         System.out.println(";");
     }
+    @Override
+    public void enterTkn_assign(GramaticaParser.Tkn_assignContext ctx){
+        System.out.print("=");
+    }
     //Write
     @Override
     public void enterSentenceWrite(GramaticaParser.SentenceWriteContext ctx){
@@ -217,6 +221,11 @@ public class Traductor extends GramaticaBaseListener {
         System.out.print(")");
     }
     @Override
+    public void enterEntonces(GramaticaParser.EntoncesContext ctx){
+        System.out.println("{");
+    }
+
+    @Override
     public void exitConditional(GramaticaParser.ConditionalContext ctx){
         tab--;
         printTab();
@@ -235,6 +244,10 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         tab++;
         System.out.print("while");
+    }
+    @Override
+    public void enterHaga(GramaticaParser.HagaContext ctx){
+        System.out.println("{");
     }
 
     @Override
@@ -371,8 +384,33 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         System.out.println("}");
     }
-    //Terminal handle
+    //Handle Id and Index and Atributes
     @Override
+    public void enterIdConIndexYAtributo(GramaticaParser.IdConIndexYAtributoContext ctx){
+        System.out.print(ctx.ID().getText());
+    }
+
+    @Override
+    public void enterIndexAcceso(GramaticaParser.IndexAccesoContext ctx){
+        System.out.print("[");
+        System.out.print(ctx.TKN_INTEGER().getText());
+    }
+    @Override
+    public void enterListaIndex(GramaticaParser.ListaIndexContext ctx){
+        System.out.printf("][%s",ctx.TKN_INTEGER().getText());
+    }
+    @Override
+    public void exitIndexAcceso(GramaticaParser.IndexAccesoContext ctx){
+        System.out.print("]");
+    }
+    @Override
+    public void enterAtributo(GramaticaParser.AtributoContext ctx){
+        System.out.printf(".%s",ctx.ID().getText());
+    }
+
+
+    //Terminal handle
+   /* @Override
     public void visitTerminal(TerminalNode node){
         String text=node.getText();
         if(text.charAt(0)=='0'){ //Handle valid java integer and double
@@ -385,7 +423,7 @@ public class Traductor extends GramaticaBaseListener {
             if(KEYWORDS.containsKey(node.getSymbol().getType())){text=KEYWORDS.get(node.getSymbol().getType());} //U
         }
         System.out.print(text); //+,-,*,/,...
-    }
+    }*/
 
 
 }
