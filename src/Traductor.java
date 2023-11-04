@@ -13,14 +13,17 @@ public class Traductor extends GramaticaBaseListener {
     private int tab=2;
     private Map<String,Integer> datatype=new HashMap<String,Integer>();
     //1: string,2:char,  3: double, 4: int, 5: boolean,
+
+
+
     final private Map<Integer, String> KEYWORDS = new HashMap<Integer, String>(){{
         put(GramaticaLexer.INICIO,"");
         put(GramaticaLexer.FIN,"");
-        put(GramaticaLexer.ENTERO,"int ");
-        put(GramaticaLexer.REAL,"double ");
-        put(GramaticaLexer.BOOLEANO,"boolean ");
-        put(GramaticaLexer.CARACTER,"char ");
-        put(GramaticaLexer.CADENA,"String ");
+        put(GramaticaLexer.ENTERO,"int");
+        put(GramaticaLexer.REAL,"double");
+        put(GramaticaLexer.BOOLEANO,"boolean");
+        put(GramaticaLexer.CARACTER,"char");
+        put(GramaticaLexer.CADENA,"String");
         put(GramaticaLexer.VERDADERO,"true ");
         put(GramaticaLexer.FALSO,"false ");
         put(GramaticaLexer.DIV,"pendiente "); //Pendiente
@@ -35,7 +38,7 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.SINO,""); //Sujeto a cambios
         put(GramaticaLexer.ENTONCES,"{\n");
         put(GramaticaLexer.CASO,""); //Pendiente de complementar
-        put(GramaticaLexer.MIENTRAS,"");
+        put(GramaticaLexer.MIENTRAS,"while");
         put(GramaticaLexer.HAGA,"{\n"); //Pendiente de complementar
         put(GramaticaLexer.REPITA,""); //completar
         put(GramaticaLexer.HASTA,"");
@@ -59,86 +62,75 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.TKN_COLON,"");
 
     }};
+
+    final private Map<String, String> tipos = new HashMap<String, String>(){{
+        put("entero","int");
+        put("real","double");
+        put("booleano","boolean");
+        put("caracter","char");
+        put("cadena","String");
+    }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
     @Override
-    public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaracin de variables, etc
+    public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
+        printTab();
+        String var = ctx.tipo().getText();
+        if(tipos.containsKey(var)){
+            var = tipos.get(var);
+        }
+        if(ctx.TKN_INTEGER().size()==1){
+            System.out.println(var + "[] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) +"]"+ ";");
+        }else if (ctx.TKN_INTEGER().size()==2){
+            System.out.println(var + "[][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) + "]"+ "[" +ctx.TKN_INTEGER(1)+ "]"+ ";");
+        }else if (ctx.TKN_INTEGER().size()==3) {
+            System.out.println(var + "[][][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0)+"]" + "[" +ctx.TKN_INTEGER(1)+ "]" + "[" + ctx.TKN_INTEGER(2) +"]"+ ";");
+        }
+    }
+
+
+    @Override
+    public void enterDecCommaId( GramaticaParser.DecCommaIdContext ctx) {
+        int tam = ctx.ID().size();
+        for(int i  = 0; i <tam ; i++){
+            System.out.print(", "+ctx.ID().get(i).getText());
+        }
+    }
+
+    @Override
+    public void enterDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
+        printTab();
+        String var = ctx.tipo().getText();
+        if(var.equals("entero")){
+            var = "int";
+        }else if(var.equals("real")){
+            var = "double";
+        }else if (var.equals("booleano")) {
+            var = "boolean";
+        }else if (var.equals("caracter")){
+            var = "char";
+        }else if (var.equals("cadena")){
+            var = "String";
+        }
+        System.out.print(var + " " + ctx.ID().getText());
+    }
+    @Override
+    public void exitDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
+        System.out.println(";");
+    }
+
+    @Override
+    public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaración de variables, etc
         System.out.println("import java.util.Scanner;");
         System.out.println("class Main {");
-        printTab();
-        System.out.println("private static Scanner scanner=new Scanner(System.in);");
+        System.out.println("\tprivate static Scanner scanner=new Scanner(System.in);");
+        System.out.println("\tpublic static void main(String[] args) {");
         //Falta scanner y demas librerias necesarias
-
     }
-
-    @Override
-    public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx){
-        printTab();
-        System.out.print("public static ");
-
-        // check tipo in ctx and replace it with hashmap value
-        System.out.print(KEYWORDS.get(ctx.retornoAux().tipoRetorno().getStart().getType()));
-    }
-
-    @Override
-    public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx){
-        printTab();
-        System.out.print("public static void ");
-    }
-
-    @Override
-    public void enterSubPF(GramaticaParser.SubPFContext ctx){
-        System.out.print("{");
-    }
-
-    @Override
-    public void exitSubPF(GramaticaParser.SubPFContext ctx){
-        System.out.println("}");
-        tab--;
-    }
-
-    @Override
-    public void enterSubPP(GramaticaParser.SubPPContext ctx){
-        System.out.print("{");
-    }
-
-    @Override
-    public void exitSubPP(GramaticaParser.SubPPContext ctx){
-        System.out.println("}");
-        tab--;
-    }
-
-
-    @Override
-    public void enterParametrosFP(GramaticaParser.ParametrosFPContext ctx){
-        System.out.print("(");
-    }
-
-    @Override
-    public void exitParametrosFP(GramaticaParser.ParametrosFPContext ctx){
-        System.out.print(")");
-        tab++;
-    }
-
     @Override
     public void exitS(GramaticaParser.SContext ctx){
+        System.out.println("\t}");
         System.out.println("}");
     }
-
-    @Override
-    public void enterMain(GramaticaParser.MainContext ctx){
-        printTab();
-        System.out.println("public static void main(String[] args) {");
-        tab++;
-    }
-
-    @Override
-    public void exitMain(GramaticaParser.MainContext ctx) {
-        printTab();
-        System.out.println("}");
-        tab--;
-    }
-
-
     //Sentences
 
     //Assign
@@ -149,10 +141,6 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void exitSentenceAssign(GramaticaParser.SentenceAssignContext ctx){
         System.out.println(";");
-    }
-    @Override
-    public void enterTkn_assign(GramaticaParser.Tkn_assignContext ctx){
-        System.out.print("=");
     }
     //Write
     @Override
@@ -183,21 +171,17 @@ public class Traductor extends GramaticaBaseListener {
         if(datatype.containsKey(ctx.idConIndexYAtributo().ID().getText())){
             tipo=datatype.get(ctx.idConIndexYAtributo().ID().getText());
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
-                case 1: //Inte input
-                    System.out.println("scanner.nextInt();");
-                    break;
-                case 2: //Real input
-                    System.out.println("scanner.nextDouble();"); //completar
-                    break;
-                case 3: //Boolean input
-                    System.out.println("scanner.nextBoolean();"); //completar
-                    break;
-                case 4: //Character input
-                    System.out.println("scanner.nextLine().charAt(0);"); //completar
-                    break;
-                case 5: //String input
-                    System.out.println("scanner.nextLine();");
-                    break;
+                case 1:
+                    System.out.print("Integer.nextInt(");
+                case 2:
+                    System.out.print("scanner.nextDouble()"); //completar
+                case 3:
+                    System.out.print("scanner.nextBoolean()"); //completar
+                case 4:
+                    System.out.print("scanner.next()"); //completar
+                case 5:
+                    System.out.println("scanner.nextLine()");
+
             }
         }else{
             System.out.println();
@@ -221,11 +205,6 @@ public class Traductor extends GramaticaBaseListener {
         System.out.print(")");
     }
     @Override
-    public void enterEntonces(GramaticaParser.EntoncesContext ctx){
-        System.out.println("{");
-    }
-
-    @Override
     public void exitConditional(GramaticaParser.ConditionalContext ctx){
         tab--;
         printTab();
@@ -238,74 +217,6 @@ public class Traductor extends GramaticaBaseListener {
         tab++;
         System.out.println("}else{");
     }
-    //while statement
-    @Override
-    public void enterWhile(GramaticaParser.WhileContext ctx){
-        printTab();
-        tab++;
-        System.out.print("while");
-    }
-    @Override
-    public void enterHaga(GramaticaParser.HagaContext ctx){
-        System.out.println("{");
-    }
-
-    @Override
-    public void exitWhile(GramaticaParser.WhileContext ctx){
-        tab--;
-        printTab();
-        System.out.println("}");
-    }
-
-    //do while statement
-    @Override
-    public void enterDoWhile(GramaticaParser.DoWhileContext ctx) {
-        printTab();
-        tab++;
-        System.out.println("do {");
-    }
-
-    @Override
-    public void enterDoWhileCon(GramaticaParser.DoWhileConContext ctx) {
-        printTab();
-        System.out.print("} while (");
-    }
-
-    @Override
-    public void exitDoWhile(GramaticaParser.DoWhileContext ctx) {
-        tab--;
-        System.out.println(");");
-    }
-
-    @Override
-    public void enterSubrutinaLlamada(GramaticaParser.SubrutinaLlamadaContext ctx){
-        printTab();
-        if(ctx.ID()!=null){
-            System.out.print(formatId(ctx.ID().getText()));
-        }
-    }
-    @Override
-    public void exitSubrutinaLlamada(GramaticaParser.SubrutinaLlamadaContext ctx){
-        if(ctx.NUEVA_LINEA()!=null){
-            System.out.print("System.out.println()");
-        }else{
-            if(ctx.argumentos()==null){
-                System.out.print("()");
-            }
-        }
-        System.out.println(";");
-    }
-
-    @Override
-    public void enterArgumentos(GramaticaParser.ArgumentosContext ctx){
-        System.out.print("(");
-    }
-
-    @Override
-    public void exitArgumentos(GramaticaParser.ArgumentosContext ctx){
-        System.out.print(")");
-    }
-
     //for statement
     @Override
     public void enterFor(GramaticaParser.ForContext ctx){
@@ -363,11 +274,6 @@ public class Traductor extends GramaticaBaseListener {
         System.out.println(":");
     }
     @Override
-    public void exitCuerpoCaso(GramaticaParser.CuerpoCasoContext ctx){
-        printTab();
-        System.out.println("break;");
-    }
-    @Override
     public void enterSinoCaso(GramaticaParser.SinoCasoContext ctx){
         tab--;
         printTab();
@@ -380,165 +286,8 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         System.out.println("}");
     }
-    //Handle Id and Index and Atributes
-    @Override
-    public void enterIdConIndexYAtributo(GramaticaParser.IdConIndexYAtributoContext ctx){
-       System.out.print(formatId(ctx.ID().getText()));
-    }
-
-    @Override
-    public void enterIndexAcceso(GramaticaParser.IndexAccesoContext ctx){
-        System.out.print("[");
-        System.out.print(ctx.TKN_INTEGER().getText());
-    }
-    @Override
-    public void enterListaIndex(GramaticaParser.ListaIndexContext ctx){
-        System.out.printf("][%s",ctx.TKN_INTEGER().getText());
-    }
-    @Override
-    public void exitIndexAcceso(GramaticaParser.IndexAccesoContext ctx){
-        System.out.print("]");
-    }
-    @Override
-    public void enterAtributo(GramaticaParser.AtributoContext ctx){
-        System.out.printf(".%s",ctx.ID().getText());
-    }
-
-    //Exp Handle
-    @Override
-    public void enterOperadorLogico(GramaticaParser.OperadorLogicoContext ctx){
-        if(ctx.OR()!=null){
-            System.out.print("|");
-        }else if(ctx.AND()!=null){
-            System.out.print("&");
-        }
-    }
-    @Override
-    public void enterOperadorRelacional(GramaticaParser.OperadorRelacionalContext ctx){
-//TKN_EQUAL|TKN_NEQ|TKN_LEQ|TKN_LESS|TKN_GEP|TKN_GREATER;
-        if(ctx.TKN_NEQ()!=null){
-            System.out.print("!=");
-        }else if (ctx.TKN_EQUAL()!=null){
-            System.out.print("=="); //Imprime tal cual es simbolo
-        }else{
-            System.out.print(ctx.getText());
-        }
-    }
-    @Override
-    public void enterTkn_power(GramaticaParser.Tkn_powerContext ctx){
-        System.out.print("^");
-    }
-    @Override
-    public void enterPlusMinus(GramaticaParser.PlusMinusContext ctx){
-        System.out.print(ctx.getText());
-    }
-    @Override
-    public void enterMultiDiv(GramaticaParser.MultiDivContext ctx){
-        System.out.print(ctx.getText());
-    }
-    @Override
-    public void enterDiv(GramaticaParser.DivContext ctx){
-        System.out.print("/"); //Repensar esto
-    }
-    @Override
-    public void enterMod(GramaticaParser.ModContext ctx){
-        System.out.print("%");
-    }
-    @Override
-    public void enterTkn_minus(GramaticaParser.Tkn_minusContext ctx){
-        System.out.print("-");
-    }
-    @Override
-    public void enterExpParentesis(GramaticaParser.ExpParentesisContext ctx){
-        System.out.print("(");
-    }
-    @Override
-    public void exitExpParentesis(GramaticaParser.ExpParentesisContext ctx){
-        System.out.print(")");
-    }
-    @Override
-    public void enterExpInt(GramaticaParser.ExpIntContext ctx){
-        System.out.print(formatInt(ctx.TKN_INTEGER().getText()));
-    }
-    @Override
-    public void enterExpString(GramaticaParser.ExpStringContext ctx){
-        System.out.print(ctx.getText());
-    }
-    @Override
-    public void enterExpDouble(GramaticaParser.ExpDoubleContext ctx){
-        System.out.print(formatDouble(ctx.TKN_REAL().getText()));
-    }
-    @Override
-    public void enterExpChar(GramaticaParser.ExpCharContext ctx){
-        System.out.print(ctx.getText());
-    }
-    @Override
-    public void enterVerdadero (GramaticaParser.VerdaderoContext ctx){
-        System.out.print("true");
-    }
-    @Override
-    public void enterFalso(GramaticaParser.FalsoContext ctx){
-        System.out.print("false");
-    }
-    @Override
-    public void enterId(GramaticaParser.IdContext ctx){
-        System.out.print(formatId(ctx.ID().getText()));
-    }
-    @Override
-    public void enterTkn_comma(GramaticaParser.Tkn_commaContext ctx){
-        System.out.print(",");
-    }
-    public int formatInt(String number){
-        return Integer.parseInt(number);
-    }
-    public Double formatDouble(String number){
-        return Double.parseDouble(number);
-    }
-    public String formatId(String id){
-        if(!id.isEmpty() && id.charAt(0)=='_'){
-            return "a"+id; //Evita variables llamadas __... agragando un caracter valido para el nombre
-        }
-        return id;
-    }
-    @Override
-    public void enterExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
-        if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
-                System.out.print("(int) (");
-        }
-    }
-    @Override
-    public void exitExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
-        if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
-            System.out.print(")");
-        }
-    }
-    @Override
-    public void enterDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
-        printTab();
-        System.out.printf("public static class %s{\n",ctx.ID());
-        tab++;
-    }
-    @Override
-    public void exitDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
-        tab--;
-        printTab();
-        System.out.println("}");
-    }
-
-    /*
-    * @Override
-    public void enterExpMod(GramaticaParser.ExpModContext ctx){
-        if(ctx.parent instanceof GramaticaParser.ExpDivEnteraContext){
-            GramaticaParser.ExpDivEnteraContext ctxParent= ( GramaticaParser.ExpDivEnteraContext)ctx.parent;
-            if(ctxParent.expDivEnteraAux()!=null){ //Es decir hay un div, hay que parsear la expMod a Integer
-
-            }
-        }
-    }*/
-
-
     //Terminal handle
-   /* @Override
+    @Override
     public void visitTerminal(TerminalNode node){
         String text=node.getText();
         if(text.charAt(0)=='0'){ //Handle valid java integer and double
@@ -550,8 +299,10 @@ public class Traductor extends GramaticaBaseListener {
         }else{ //handle keywords
             if(KEYWORDS.containsKey(node.getSymbol().getType())){text=KEYWORDS.get(node.getSymbol().getType());} //U
         }
-        System.out.print(text); //+,-,*,/,...
-    }*/
+
+
+        //System.out.print(text); //+,-,*,/,...
+    }
 
 
 }

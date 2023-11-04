@@ -1,4 +1,5 @@
-
-inicio
-escriba a[2,3,4].b[1,4,5][2].xd.xd.xd[3,5,6]
-fin
+// ejemplo de condición simple
+entero i,b,c,d
+caracter a
+cadena[87] s
+arreglo[10] de entero arreglo_enteros
