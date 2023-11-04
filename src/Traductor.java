@@ -63,6 +63,7 @@ public class Traductor extends GramaticaBaseListener {
 
     }};
 
+
     final private Map<String, String> tipos = new HashMap<String, String>(){{
         put("entero","int");
         put("real","double");
@@ -71,6 +72,12 @@ public class Traductor extends GramaticaBaseListener {
         put("cadena","String");
     }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
+
+    @Override
+    public void  exitExp(GramaticaParser.ExpContext ctx){
+        printTab();
+        System.out.print(ctx.getText());
+    }
     @Override
     public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
         printTab();
@@ -95,20 +102,36 @@ public class Traductor extends GramaticaBaseListener {
             System.out.print(", "+ctx.ID().get(i).getText());
         }
     }
+    @Override
+    public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
+        printTab();
+        String var = ctx.tipoRetorno().getText();
+        if(tipos.containsKey(var)){
+            var = tipos.get(var);
+        }
+        System.out.println("private "+ var + " " + ctx.ID().getText() + "(" + ctx.parametrosFP().getText() + ")" + "{");
+    }
+    @Override
+    public void exitDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
+
+        //System.out.println(ctx.sentencia().toString() + ";");
+        System.out.println("return " + ctx.exp().getText() + ";");
+        printTab();
+        System.out.println("}");
+    }
+    @Override
+    public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx) {
+        printTab();
+        System.out.println("private void"+ ctx.ID().getText() + ";");
+    }
 
     @Override
     public void enterDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
         printTab();
         String var = ctx.tipo().getText();
-        if(var.equals("entero")){
-            var = "int";
-        }else if(var.equals("real")){
-            var = "double";
-        }else if (var.equals("booleano")) {
-            var = "boolean";
-        }else if (var.equals("caracter")){
-            var = "char";
-        }else if (var.equals("cadena")){
+        if(tipos.containsKey(var)){
+            var = tipos.get(var);
+        }else if (var.contains("cadena[")){
             var = "String";
         }
         System.out.print(var + " " + ctx.ID().getText());
@@ -136,7 +159,7 @@ public class Traductor extends GramaticaBaseListener {
     //Assign
     @Override
     public void enterSentenceAssign(GramaticaParser.SentenceAssignContext ctx){
-        printTab();
+        //printTab();
     }
     @Override
     public void exitSentenceAssign(GramaticaParser.SentenceAssignContext ctx){
@@ -149,7 +172,6 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterExpEscriba(GramaticaParser.ExpEscribaContext ctx){
-
         printTab();
         System.out.print("System.out.print(");
     }
@@ -260,19 +282,16 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterExpLiteral(GramaticaParser.ExpLiteralContext ctx){
-        tab--;
-        printTab();
-        tab++;
-        System.out.print("case ");
+        //System.out.print("case ");
     }
-    @Override
-    public void exitExpLiteral(GramaticaParser.ExpLiteralContext ctx){
+    /*@Override
+    /*public void exitExpLiteral(GramaticaParser.ExpLiteralContext ctx){
         System.out.println(":");
     }
     @Override
     public void enterColonCaso(GramaticaParser.ColonCasoContext ctx){
         System.out.println(":");
-    }
+    }*/
     @Override
     public void enterSinoCaso(GramaticaParser.SinoCasoContext ctx){
         tab--;
