@@ -1,6 +1,7 @@
-// ejemplo de condición simple
+funcion exponenciacion(entero base,entero exponente): real
+	inicio
+		retorne base^exponente
+	fin
+
 inicio
-	si 2<4 entonces
-		escriba "2 es menor que 4"
-	fin si
 fin

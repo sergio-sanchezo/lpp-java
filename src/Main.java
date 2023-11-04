@@ -1,7 +1,11 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
+import java.util.Scanner;
+
 public class Main {
+
+    private static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws Exception {
         try{
             // crear un analizador léxico

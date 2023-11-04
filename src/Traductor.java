@@ -35,7 +35,7 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.SINO,""); //Sujeto a cambios
         put(GramaticaLexer.ENTONCES,"{\n");
         put(GramaticaLexer.CASO,""); //Pendiente de complementar
-        put(GramaticaLexer.MIENTRAS,"while");
+        put(GramaticaLexer.MIENTRAS,"");
         put(GramaticaLexer.HAGA,"{\n"); //Pendiente de complementar
         put(GramaticaLexer.REPITA,""); //completar
         put(GramaticaLexer.HASTA,"");
@@ -64,17 +64,81 @@ public class Traductor extends GramaticaBaseListener {
     public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaración de variables, etc
         System.out.println("import java.util.Scanner;");
         System.out.println("class Main {");
-        System.out.println("\tprivate static Scanner scanner=new Scanner(System.in);");
-        System.out.println("\tpublic static void main(String[] args) {");
+        printTab();
+        System.out.println("private static Scanner scanner=new Scanner(System.in);");
         //Falta scanner y demas librerias necesarias
 
     }
+
+    @Override
+    public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx){
+        printTab();
+        System.out.print("public static ");
+
+        // check tipo in ctx and replace it with hashmap value
+        System.out.print(KEYWORDS.get(ctx.retornoAux().tipoRetorno().getStart().getType()));
+    }
+
+    @Override
+    public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx){
+        printTab();
+        System.out.print("public static void ");
+    }
+
+    @Override
+    public void enterSubPF(GramaticaParser.SubPFContext ctx){
+        System.out.print("{");
+    }
+
+    @Override
+    public void exitSubPF(GramaticaParser.SubPFContext ctx){
+        System.out.println("}");
+        tab--;
+    }
+
+    @Override
+    public void enterSubPP(GramaticaParser.SubPPContext ctx){
+        System.out.print("{");
+    }
+
+    @Override
+    public void exitSubPP(GramaticaParser.SubPPContext ctx){
+        System.out.println("}");
+        tab--;
+    }
+
+
+    @Override
+    public void enterParametrosFP(GramaticaParser.ParametrosFPContext ctx){
+        System.out.print("(");
+    }
+
+    @Override
+    public void exitParametrosFP(GramaticaParser.ParametrosFPContext ctx){
+        System.out.print(")");
+        tab++;
+    }
+
     @Override
     public void exitS(GramaticaParser.SContext ctx){
-        System.out.println("\t}");
         System.out.println("}");
-
     }
+
+    @Override
+    public void enterMain(GramaticaParser.MainContext ctx){
+        printTab();
+        System.out.println("public static void main(String[] args) {");
+        tab++;
+    }
+
+    @Override
+    public void exitMain(GramaticaParser.MainContext ctx) {
+        printTab();
+        System.out.println("}");
+        tab--;
+    }
+
+
     //Sentences
 
     //Assign
@@ -165,6 +229,74 @@ public class Traductor extends GramaticaBaseListener {
         tab++;
         System.out.println("}else{");
     }
+    //while statement
+    @Override
+    public void enterWhile(GramaticaParser.WhileContext ctx){
+        printTab();
+        tab++;
+        System.out.print("while");
+    }
+
+    @Override
+    public void exitWhile(GramaticaParser.WhileContext ctx){
+        tab--;
+        printTab();
+        System.out.println("}");
+    }
+
+    //do while statement
+    @Override
+    public void enterDoWhile(GramaticaParser.DoWhileContext ctx) {
+        printTab();
+        tab++;
+        System.out.println("do {");
+    }
+
+    @Override
+    public void enterDoWhileCon(GramaticaParser.DoWhileConContext ctx) {
+        printTab();
+        System.out.print("} while (");
+    }
+
+    @Override
+    public void exitDoWhile(GramaticaParser.DoWhileContext ctx) {
+        tab--;
+        System.out.println(");");
+    }
+
+    @Override
+    public void enterCallFunction(GramaticaParser.CallFunctionContext ctx){
+        printTab();
+    }
+
+    @Override
+    public void exitCallFunction(GramaticaParser.CallFunctionContext ctx){
+        tab--;
+        // check if NUEVA_LINEA is not null
+        if(ctx.subrutinaLlamada().NUEVA_LINEA() != null) {
+            System.out.println("System.out.println();");
+        } else {
+            // check if there are argumentos in ctx
+            if (ctx.subrutinaLlamada().argumentos() == null) {
+                System.out.println("();");
+            } else {
+                System.out.println(";");
+
+            }
+        }
+        tab++;
+    }
+
+    @Override
+    public void enterArgumentos(GramaticaParser.ArgumentosContext ctx){
+        System.out.print("(");
+    }
+
+    @Override
+    public void exitArgumentos(GramaticaParser.ArgumentosContext ctx){
+        System.out.print(")");
+    }
+
     //for statement
     @Override
     public void enterFor(GramaticaParser.ForContext ctx){
@@ -252,8 +384,6 @@ public class Traductor extends GramaticaBaseListener {
         }else{ //handle keywords
             if(KEYWORDS.containsKey(node.getSymbol().getType())){text=KEYWORDS.get(node.getSymbol().getType());} //U
         }
-
-
         System.out.print(text); //+,-,*,/,...
     }
 
