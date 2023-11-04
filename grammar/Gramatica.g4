@@ -1,6 +1,7 @@
 grammar Gramatica;
 //Reglas gramticales
-s: declaracionesR declaracionesV declaracionesFP INICIO sentencia* FIN;
+s: declaracionesR declaracionesV declaracionesFP main;
+main: INICIO sentencia* FIN;
 declaracionesR: declaracionR*;
 declaracionesV:declaracionV*;
 declaracionesFP: (declaracionF|declaracionP)*;
@@ -15,19 +16,24 @@ tipo: ENTERO|
        tipoArreglo|
        ID;
 tipoArreglo: ARREGLO TKN_OPENING_BRA TKN_INTEGER (TKN_COMMA TKN_INTEGER)* TKN_CLOSING_BRA DE tipo;
-declaracionF: FUNCION ID parametrosFP? TKN_COLON tipoRetorno declaracionV* sentencia* (RETORNE exp)? FIN; //Incluye declaraciones que son iguales a las del main, y puede o no tener parametros, al igual que retorne
-declaracionP:PROCEDIMIENTO ID parametrosFP? declaracionV* sentencia* FIN;
+declaracionF: FUNCION ID parametrosFP? retornoAux subPF+ ; //Incluye declaraciones que son iguales a las del main, y puede o no tener parametros, al igual que retorne
+retornoAux: TKN_COLON tipoRetorno;
+declaracionP:PROCEDIMIENTO ID parametrosFP? subPP+;
+subPF: declaracionV* sentenciaSubPF;
+subPP: declaracionV* sentenciaSubP;
 parametrosFP: TKN_OPENING_PAR listaParametrosFP TKN_CLOSING_PAR;
 listaParametrosFP:   parametro (TKN_COMMA parametro)*; //
 parametro: VAR? tipo ID;
 tipoRetorno: ENTERO | REAL | BOOLEANO | CARACTER | ID | CADENA TKN_OPENING_BRA TKN_INTEGER TKN_CLOSING_BRA;
+sentenciaSubPF:INICIO sentencia* RETORNE exp FIN;
+sentenciaSubP:INICIO sentencia* FIN;
 sentencia:
       idConIndexYAtributo TKN_ASSIGN exp #sentenceAssign
       |ESCRIBA expEscriba (',' expEscriba)* #sentenceWrite
       |LEA idLectura (TKN_COMMA idLectura)* #sentenceRead
       |SI expCondicional ENTONCES sentencia* sino?  FIN SI  #conditional
       |MIENTRAS expCondicional HAGA sentencia* FIN MIENTRAS#while //Sergio
-      |REPITA sentencia* HASTA expCondicional #doWhile //Sergio
+      |REPITA sentencia* HASTA doWhileCon #doWhile //Sergio
       |PARA paraIniCon HAGA sentencia* FIN PARA #for
       |LLAMAR subrutinaLlamada #callFunction //Sergio
       |CASO  idCaso (expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
@@ -50,6 +56,7 @@ indexYAtributo: indexAcceso* atributo*;
 indexAcceso: TKN_OPENING_BRA TKN_INTEGER listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
 listaIndex:',' TKN_INTEGER; //Acceso matriz de varias dimensiones (no se usa TKN_COMMA para facilitar la traducción)
 atributo: TKN_PERIOD ID indexYAtributo;
+doWhileCon: exp;
 exp: expRelacional expAux?; //Completar
 expAux: operadorLogico expRelacional expAux?;
 expRelacional: expPotencia expRelacionalAux?;
