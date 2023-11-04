@@ -28,17 +28,19 @@ tipoRetorno: ENTERO | REAL | BOOLEANO | CARACTER | ID | CADENA TKN_OPENING_BRA T
 sentenciaSubPF:INICIO sentencia* RETORNE exp FIN;
 sentenciaSubP:INICIO sentencia* FIN;
 sentencia:
-      idConIndexYAtributo TKN_ASSIGN exp #sentenceAssign
+      idConIndexYAtributo tkn_assign exp #sentenceAssign
       |ESCRIBA expEscriba (',' expEscriba)* #sentenceWrite
       |LEA idLectura (TKN_COMMA idLectura)* #sentenceRead
-      |SI expCondicional ENTONCES sentencia* sino?  FIN SI  #conditional
-      |MIENTRAS expCondicional HAGA sentencia* FIN MIENTRAS#while //Sergio
+      |SI expCondicional entonces sentencia* sino?  FIN SI  #conditional
+      |MIENTRAS expCondicional haga sentencia* FIN MIENTRAS#while //Sergio
       |REPITA sentencia* HASTA doWhileCon #doWhile //Sergio
       |PARA paraIniCon HAGA sentencia* FIN PARA #for
       |LLAMAR subrutinaLlamada #callFunction //Sergio
       |CASO  idCaso (cuerpoCaso)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
 ;
-
+tkn_assign: TKN_ASSIGN;
+entonces: ENTONCES;
+haga: HAGA;
 idCaso: idConIndexYAtributo;
 cuerpoCaso: expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*;
 idLectura: idConIndexYAtributo; //new
@@ -52,7 +54,8 @@ argumentos: TKN_OPENING_PAR (exp (TKN_COMMA exp)* )? TKN_CLOSING_PAR;
 paraIniCon : idConIndexYAtributo TKN_ASSIGN exp hastaPara exp; //Inicialización e incremento
 expCondicional: exp; //se usa expresión aparte para facilitar traducción
 sino: SINO sentencia*; //Se hizo regla aparte por facilidad de la traducción (corchetes)
-idConIndexYAtributo: ID (indexYAtributo|argumentos);
+id: ID (indexYAtributo|argumentos);
+idConIndexYAtributo: ID indexYAtributo;
 indexYAtributo: indexAcceso* atributo*;
 indexAcceso: TKN_OPENING_BRA TKN_INTEGER listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
 listaIndex:',' TKN_INTEGER; //Acceso matriz de varias dimensiones (no se usa TKN_COMMA para facilitar la traducción)
@@ -80,7 +83,7 @@ expBase: TKN_OPENING_PAR exp TKN_CLOSING_PAR|
          TKN_CHAR|
          VERDADERO|
          FALSO|
-         idConIndexYAtributo
+         id
 ;
 //Operadores logicos y relacionales
 operadorRelacional: TKN_EQUAL|TKN_NEQ|TKN_LEQ|TKN_LESS|TKN_GEP|TKN_GREATER;
