@@ -1,4 +1,4 @@
-funcion exponenciacion(entero base,entero exponente): entero
+funcion exponenciacion(entero base,entero exponente): real
 	inicio
 		retorne base^exponente
 	fin

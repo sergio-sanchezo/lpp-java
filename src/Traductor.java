@@ -93,6 +93,7 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void exitSubPF(GramaticaParser.SubPFContext ctx){
         System.out.println("}");
+        tab--;
     }
 
     @Override
@@ -103,6 +104,7 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void exitSubPP(GramaticaParser.SubPPContext ctx){
         System.out.println("}");
+        tab--;
     }
 
 
