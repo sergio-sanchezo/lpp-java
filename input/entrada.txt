@@ -1,7 +1,4 @@
-funcion exponenciacion(entero base,entero exponente): real
-	inicio
-		retorne base^exponente
-	fin
 
 inicio
+escriba a[2,3,4].b[1,4,5][2].xd.xd.xd[3,5,6]
 fin
