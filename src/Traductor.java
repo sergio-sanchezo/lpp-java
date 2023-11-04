@@ -74,12 +74,15 @@ public class Traductor extends GramaticaBaseListener {
     public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx){
         printTab();
         System.out.print("public static ");
+
+        // check tipo in ctx and replace it with hashmap value
+        System.out.print(KEYWORDS.get(ctx.retornoAux().tipoRetorno().getStart().getType()));
     }
 
     @Override
     public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx){
         printTab();
-        System.out.print("public static ");
+        System.out.print("public static void ");
     }
 
     @Override
@@ -102,10 +105,6 @@ public class Traductor extends GramaticaBaseListener {
         System.out.println("}");
     }
 
-    @Override
-    public void enterRetornoAux(GramaticaParser.RetornoAuxContext ctx){
-        System.out.print(": ");
-    }
 
     @Override
     public void enterParametrosFP(GramaticaParser.ParametrosFPContext ctx){

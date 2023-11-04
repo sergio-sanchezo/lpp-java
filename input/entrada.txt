@@ -1,10 +1,7 @@
-procedimiento suma(entero n1,entero n2)
+funcion exponenciacion(entero base,entero exponente): entero
 	inicio
-		resultado<-n1+n2
-		escriba ("El resultado de la suma es: "),(resultado)
+		retorne base^exponente
 	fin
 
-
 inicio
-	llamar suma(5, 15)
 fin
