@@ -13,14 +13,17 @@ public class Traductor extends GramaticaBaseListener {
     private int tab=2;
     private Map<String,Integer> datatype=new HashMap<String,Integer>();
     //1: string,2:char,  3: double, 4: int, 5: boolean,
+
+
+
     final private Map<Integer, String> KEYWORDS = new HashMap<Integer, String>(){{
         put(GramaticaLexer.INICIO,"");
         put(GramaticaLexer.FIN,"");
-        put(GramaticaLexer.ENTERO,"int ");
-        put(GramaticaLexer.REAL,"double ");
-        put(GramaticaLexer.BOOLEANO,"boolean ");
-        put(GramaticaLexer.CARACTER,"char ");
-        put(GramaticaLexer.CADENA,"String ");
+        put(GramaticaLexer.ENTERO,"int");
+        put(GramaticaLexer.REAL,"double");
+        put(GramaticaLexer.BOOLEANO,"boolean");
+        put(GramaticaLexer.CARACTER,"char");
+        put(GramaticaLexer.CADENA,"String");
         put(GramaticaLexer.VERDADERO,"true ");
         put(GramaticaLexer.FALSO,"false ");
         put(GramaticaLexer.DIV,"pendiente "); //Pendiente
@@ -59,7 +62,85 @@ public class Traductor extends GramaticaBaseListener {
         put(GramaticaLexer.TKN_COLON,"");
 
     }};
+
+
+    final private Map<String, String> tipos = new HashMap<String, String>(){{
+        put("entero","int");
+        put("real","double");
+        put("booleano","boolean");
+        put("caracter","char");
+        put("cadena","String");
+    }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
+
+    @Override
+    public void  exitExp(GramaticaParser.ExpContext ctx){
+        printTab();
+        System.out.print(ctx.getText());
+    }
+    @Override
+    public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
+        printTab();
+        String var = ctx.tipo().getText();
+        if(tipos.containsKey(var)){
+            var = tipos.get(var);
+        }
+        if(ctx.TKN_INTEGER().size()==1){
+            System.out.println(var + "[] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) +"]"+ ";");
+        }else if (ctx.TKN_INTEGER().size()==2){
+            System.out.println(var + "[][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) + "]"+ "[" +ctx.TKN_INTEGER(1)+ "]"+ ";");
+        }else if (ctx.TKN_INTEGER().size()==3) {
+            System.out.println(var + "[][][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0)+"]" + "[" +ctx.TKN_INTEGER(1)+ "]" + "[" + ctx.TKN_INTEGER(2) +"]"+ ";");
+        }
+    }
+
+
+    @Override
+    public void enterDecCommaId( GramaticaParser.DecCommaIdContext ctx) {
+        int tam = ctx.ID().size();
+        for(int i  = 0; i <tam ; i++){
+            System.out.print(", "+ctx.ID().get(i).getText());
+        }
+    }
+    @Override
+    public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
+        printTab();
+        String var = ctx.tipoRetorno().getText();
+        if(tipos.containsKey(var)){
+            var = tipos.get(var);
+        }
+        System.out.println("private "+ var + " " + ctx.ID().getText() + "(" + ctx.parametrosFP().getText() + ")" + "{");
+    }
+    @Override
+    public void exitDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
+
+        //System.out.println(ctx.sentencia().toString() + ";");
+        System.out.println("return " + ctx.exp().getText() + ";");
+        printTab();
+        System.out.println("}");
+    }
+    @Override
+    public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx) {
+        printTab();
+        System.out.println("private void"+ ctx.ID().getText() + ";");
+    }
+
+    @Override
+    public void enterDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
+        printTab();
+        String var = ctx.tipo().getText();
+        if(tipos.containsKey(var)){
+            var = tipos.get(var);
+        }else if (var.contains("cadena[")){
+            var = "String";
+        }
+        System.out.print(var + " " + ctx.ID().getText());
+    }
+    @Override
+    public void exitDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
+        System.out.println(";");
+    }
+
     @Override
     public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaracin de variables, etc
         System.out.println("import java.util.Scanner;");
@@ -67,58 +148,7 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         System.out.println("private static Scanner scanner=new Scanner(System.in);");
         //Falta scanner y demas librerias necesarias
-
     }
-
-    @Override
-    public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx){
-        printTab();
-        System.out.print("public static ");
-
-        // check tipo in ctx and replace it with hashmap value
-        System.out.print(KEYWORDS.get(ctx.retornoAux().tipoRetorno().getStart().getType()));
-    }
-
-    @Override
-    public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx){
-        printTab();
-        System.out.print("public static void ");
-    }
-
-    @Override
-    public void enterSubPF(GramaticaParser.SubPFContext ctx){
-        System.out.print("{");
-    }
-
-    @Override
-    public void exitSubPF(GramaticaParser.SubPFContext ctx){
-        System.out.println("}");
-        tab--;
-    }
-
-    @Override
-    public void enterSubPP(GramaticaParser.SubPPContext ctx){
-        System.out.print("{");
-    }
-
-    @Override
-    public void exitSubPP(GramaticaParser.SubPPContext ctx){
-        System.out.println("}");
-        tab--;
-    }
-
-
-    @Override
-    public void enterParametrosFP(GramaticaParser.ParametrosFPContext ctx){
-        System.out.print("(");
-    }
-
-    @Override
-    public void exitParametrosFP(GramaticaParser.ParametrosFPContext ctx){
-        System.out.print(")");
-        tab++;
-    }
-
     @Override
     public void exitS(GramaticaParser.SContext ctx){
         System.out.println("}");
@@ -135,6 +165,7 @@ public class Traductor extends GramaticaBaseListener {
     public void exitMain(GramaticaParser.MainContext ctx) {
         printTab();
         System.out.println("}");
+
         tab--;
     }
 
