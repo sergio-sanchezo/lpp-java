@@ -61,7 +61,7 @@ public class Traductor extends GramaticaBaseListener {
     }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
     @Override
-    public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaración de variables, etc
+    public void enterS(GramaticaParser.SContext ctx) {  //Puede variar por temas de declaracin de variables, etc
         System.out.println("import java.util.Scanner;");
         System.out.println("class Main {");
         printTab();
@@ -383,7 +383,7 @@ public class Traductor extends GramaticaBaseListener {
     //Handle Id and Index and Atributes
     @Override
     public void enterIdConIndexYAtributo(GramaticaParser.IdConIndexYAtributoContext ctx){
-       System.out.print(ctx.ID().getText());
+       System.out.print(formatId(ctx.ID().getText()));
     }
 
     @Override
@@ -511,6 +511,18 @@ public class Traductor extends GramaticaBaseListener {
         if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
             System.out.print(")");
         }
+    }
+    @Override
+    public void enterDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
+        printTab();
+        System.out.printf("public static class %s{\n",ctx.ID());
+        tab++;
+    }
+    @Override
+    public void exitDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
+        tab--;
+        printTab();
+        System.out.println("}");
     }
 
     /*
