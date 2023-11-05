@@ -426,7 +426,7 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterTkn_power(GramaticaParser.Tkn_powerContext ctx){
-        System.out.println("^");
+        System.out.print("^");
     }
     @Override
     public void enterPlusMinus(GramaticaParser.PlusMinusContext ctx){
@@ -500,6 +500,30 @@ public class Traductor extends GramaticaBaseListener {
         }
         return id;
     }
+    @Override
+    public void enterExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
+        if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
+                System.out.print("(int) (");
+        }
+    }
+    @Override
+    public void exitExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
+        if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
+            System.out.print(")");
+        }
+    }
+
+    /*
+    * @Override
+    public void enterExpMod(GramaticaParser.ExpModContext ctx){
+        if(ctx.parent instanceof GramaticaParser.ExpDivEnteraContext){
+            GramaticaParser.ExpDivEnteraContext ctxParent= ( GramaticaParser.ExpDivEnteraContext)ctx.parent;
+            if(ctxParent.expDivEnteraAux()!=null){ //Es decir hay un div, hay que parsear la expMod a Integer
+
+            }
+        }
+    }*/
+
 
     //Terminal handle
    /* @Override
