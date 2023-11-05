@@ -50,11 +50,11 @@ expLiteral: TKN_INTEGER| TKN_STRING|TKN_CHAR|TKN_REAL| VERDADERO | FALSO;
 colonCaso: TKN_COLON;
 sinoCaso: SINO;
 subrutinaLlamada: ID argumentos?| NUEVA_LINEA;
-argumentos: TKN_OPENING_PAR (exp (TKN_COMMA exp)* )? TKN_CLOSING_PAR;
+argumentos: TKN_OPENING_PAR (exp (tkn_comma exp)* )? TKN_CLOSING_PAR;
+tkn_comma:TKN_COMMA;
 paraIniCon : idConIndexYAtributo TKN_ASSIGN exp hastaPara exp; //Inicialización e incremento
 expCondicional: exp; //se usa expresión aparte para facilitar traducción
 sino: SINO sentencia*; //Se hizo regla aparte por facilidad de la traducción (corchetes)
-id: ID (indexYAtributo|argumentos);
 idConIndexYAtributo: ID indexYAtributo;
 indexYAtributo: indexAcceso* atributo*;
 indexAcceso: TKN_OPENING_BRA TKN_INTEGER listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
@@ -66,25 +66,30 @@ expAux: operadorLogico expRelacional expAux?;
 expRelacional: expPotencia expRelacionalAux?;
 expRelacionalAux:operadorRelacional expPotencia;
 expPotencia: expPlusMinus expPotenciaAux?;
-expPotenciaAux: TKN_POWER expPlusMinus expPotenciaAux?;
+expPotenciaAux: tkn_power expPlusMinus expPotenciaAux?;
 expPlusMinus: expMultiDiv expPlusMinusAux?;
 expPlusMinusAux: plusMinus expMultiDiv expPlusMinusAux?;
 expMultiDiv: expDivEntera expMultiDivAux?;
 expMultiDivAux: multiDiv expDivEntera expMultiDivAux?;
 expDivEntera: expMod expDivEnteraAux?;
-expDivEnteraAux: DIV expMod expDivEnteraAux?;
+expDivEnteraAux: div expMod expDivEnteraAux?;
 expMod: expSign expModAux?;
-expModAux: MOD expSign expModAux?;
-expSign: TKN_MINUS? expBase;
-expBase: TKN_OPENING_PAR exp TKN_CLOSING_PAR|
-         TKN_INTEGER|
-         TKN_STRING|
-         TKN_REAL|
-         TKN_CHAR|
-         VERDADERO|
-         FALSO|
-         id
+expModAux: mod expSign expModAux?;
+expSign: tkn_minus? expBase;
+expBase: TKN_OPENING_PAR exp TKN_CLOSING_PAR #expParentesis
+        |TKN_INTEGER #expInt
+         |TKN_STRING #expString
+         |TKN_REAL #expDouble
+         |TKN_CHAR #expChar
+         |VERDADERO #verdadero
+         |FALSO #falso
+         |id #expId
 ;
+id: ID (indexYAtributo|argumentos);
+tkn_power:TKN_POWER;
+div: DIV;
+mod:MOD;
+tkn_minus: TKN_MINUS;
 //Operadores logicos y relacionales
 operadorRelacional: TKN_EQUAL|TKN_NEQ|TKN_LEQ|TKN_LESS|TKN_GEP|TKN_GREATER;
 operadorLogico: AND|OR;
