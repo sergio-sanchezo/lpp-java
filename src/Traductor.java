@@ -278,26 +278,22 @@ public class Traductor extends GramaticaBaseListener {
     }
 
     @Override
-    public void enterCallFunction(GramaticaParser.CallFunctionContext ctx){
+    public void enterSubrutinaLlamada(GramaticaParser.SubrutinaLlamadaContext ctx){
         printTab();
+        if(ctx.ID()!=null){
+            System.out.print(formatId(ctx.ID().getText()));
+        }
     }
-
     @Override
-    public void exitCallFunction(GramaticaParser.CallFunctionContext ctx){
-        tab--;
-        // check if NUEVA_LINEA is not null
-        if(ctx.subrutinaLlamada().NUEVA_LINEA() != null) {
-            System.out.println("System.out.println();");
-        } else {
-            // check if there are argumentos in ctx
-            if (ctx.subrutinaLlamada().argumentos() == null) {
-                System.out.println("();");
-            } else {
-                System.out.println(";");
-
+    public void exitSubrutinaLlamada(GramaticaParser.SubrutinaLlamadaContext ctx){
+        if(ctx.NUEVA_LINEA()!=null){
+            System.out.print("System.out.println()");
+        }else{
+            if(ctx.argumentos()==null){
+                System.out.print("()");
             }
         }
-        tab++;
+        System.out.println(";");
     }
 
     @Override
@@ -387,7 +383,7 @@ public class Traductor extends GramaticaBaseListener {
     //Handle Id and Index and Atributes
     @Override
     public void enterIdConIndexYAtributo(GramaticaParser.IdConIndexYAtributoContext ctx){
-        System.out.print(ctx.ID().getText());
+       System.out.print(ctx.ID().getText());
     }
 
     @Override
@@ -408,6 +404,102 @@ public class Traductor extends GramaticaBaseListener {
         System.out.printf(".%s",ctx.ID().getText());
     }
 
+    //Exp Handle
+    @Override
+    public void enterOperadorLogico(GramaticaParser.OperadorLogicoContext ctx){
+        if(ctx.OR()!=null){
+            System.out.print("|");
+        }else if(ctx.AND()!=null){
+            System.out.print("&");
+        }
+    }
+    @Override
+    public void enterOperadorRelacional(GramaticaParser.OperadorRelacionalContext ctx){
+//TKN_EQUAL|TKN_NEQ|TKN_LEQ|TKN_LESS|TKN_GEP|TKN_GREATER;
+        if(ctx.TKN_NEQ()!=null){
+            System.out.print("!=");
+        }else if (ctx.TKN_EQUAL()!=null){
+            System.out.print("=="); //Imprime tal cual es simbolo
+        }else{
+            System.out.print(ctx.getText());
+        }
+    }
+    @Override
+    public void enterTkn_power(GramaticaParser.Tkn_powerContext ctx){
+        System.out.println("^");
+    }
+    @Override
+    public void enterPlusMinus(GramaticaParser.PlusMinusContext ctx){
+        System.out.print(ctx.getText());
+    }
+    @Override
+    public void enterMultiDiv(GramaticaParser.MultiDivContext ctx){
+        System.out.print(ctx.getText());
+    }
+    @Override
+    public void enterDiv(GramaticaParser.DivContext ctx){
+        System.out.print("/"); //Repensar esto
+    }
+    @Override
+    public void enterMod(GramaticaParser.ModContext ctx){
+        System.out.print("%");
+    }
+    @Override
+    public void enterTkn_minus(GramaticaParser.Tkn_minusContext ctx){
+        System.out.print("-");
+    }
+    @Override
+    public void enterExpParentesis(GramaticaParser.ExpParentesisContext ctx){
+        System.out.print("(");
+    }
+    @Override
+    public void exitExpParentesis(GramaticaParser.ExpParentesisContext ctx){
+        System.out.print(")");
+    }
+    @Override
+    public void enterExpInt(GramaticaParser.ExpIntContext ctx){
+        System.out.print(formatInt(ctx.TKN_INTEGER().getText()));
+    }
+    @Override
+    public void enterExpString(GramaticaParser.ExpStringContext ctx){
+        System.out.print(ctx.getText());
+    }
+    @Override
+    public void enterExpDouble(GramaticaParser.ExpDoubleContext ctx){
+        System.out.print(formatDouble(ctx.TKN_REAL().getText()));
+    }
+    @Override
+    public void enterExpChar(GramaticaParser.ExpCharContext ctx){
+        System.out.print(ctx.getText());
+    }
+    @Override
+    public void enterVerdadero (GramaticaParser.VerdaderoContext ctx){
+        System.out.print("true");
+    }
+    @Override
+    public void enterFalso(GramaticaParser.FalsoContext ctx){
+        System.out.print("false");
+    }
+    @Override
+    public void enterId(GramaticaParser.IdContext ctx){
+        System.out.print(formatId(ctx.ID().getText()));
+    }
+    @Override
+    public void enterTkn_comma(GramaticaParser.Tkn_commaContext ctx){
+        System.out.print(",");
+    }
+    public int formatInt(String number){
+        return Integer.parseInt(number);
+    }
+    public Double formatDouble(String number){
+        return Double.parseDouble(number);
+    }
+    public String formatId(String id){
+        if(!id.isEmpty() && id.charAt(0)=='_'){
+            return "a"+id; //Evita variables llamadas __... agragando un caracter valido para el nombre
+        }
+        return id;
+    }
 
     //Terminal handle
    /* @Override
