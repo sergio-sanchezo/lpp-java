@@ -64,6 +64,7 @@ public class Traductor extends GramaticaBaseListener {
     }};
 
 
+
     final private Map<String, String> tipos = new HashMap<String, String>(){{
         put("entero","int");
         put("real","double");
@@ -72,6 +73,31 @@ public class Traductor extends GramaticaBaseListener {
         put("cadena","String");
     }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
+    //************* REGISTROOOO *************
+    /*@Override
+    public void enterDeclaracionesR(GramaticaParser.DeclaracionesRContext ctx){
+        printTab();
+        System.out.println("import java.util.HashMap;");
+        System.out.println("import java.util.Map;");
+        System.out.println("public class Registro {");
+        System.out.println("\tprivate Map<String, Object> atributos;");
+        System.out.println("\tpublic Registro() {");
+        System.out.println("\t\tatributos = new HashMap<>();");
+        System.out.println("\t}");
+        System.out.println("\tpublic void agregarAtributo(String nombre, Object valor) {");
+        System.out.println("\t\tatributos.put(nombre, valor);");
+        System.out.println("\t}");
+        System.out.println("\tpublic Object obtenerAtributo(String nombre) {");
+        System.out.println("\t\treturn atributos.get(nombre);");
+        System.out.println("\t}");
+        System.out.println("}");
+    }
+    @Override
+    public void exitDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
+        String var = ctx.ID().getText();
+        System.out.println("Registro " + var + " = new Registro();");
+
+    }*/
 
     @Override
     public void  exitExp(GramaticaParser.ExpContext ctx){

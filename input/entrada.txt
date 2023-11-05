@@ -1,7 +1,4 @@
-entero matricula
+
 inicio
-
-t<-(2+8)/4*2
-
-	verdadero /1
+cadena
 fin
