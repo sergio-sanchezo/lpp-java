@@ -69,12 +69,14 @@ expPotencia: expPlusMinus expPotenciaAux?;
 expPotenciaAux: tkn_power expPlusMinus expPotenciaAux?;
 expPlusMinus: expMultiDiv expPlusMinusAux?;
 expPlusMinusAux: plusMinus expMultiDiv expPlusMinusAux?;
-expMultiDiv: expDivEntera expMultiDivAux?;
+/*expMultiDiv: expDivEntera expMultiDivAux?;
 expMultiDivAux: multiDiv expDivEntera expMultiDivAux?;
 expDivEntera: expMod expDivEnteraAux?;
 expDivEnteraAux: div expMod expDivEnteraAux?;
 expMod: expSign expModAux?;
-expModAux: mod expSign expModAux?;
+expModAux: mod expSign expModAux?;*/
+expMultiDiv: expSign expMultiDivAux?;
+expMultiDivAux: (div|mod|multiDiv) expSign expMultiDivAux?;
 expSign: tkn_minus? expBase;
 expBase: TKN_OPENING_PAR exp TKN_CLOSING_PAR #expParentesis
         |TKN_INTEGER #expInt
