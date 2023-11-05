@@ -1,0 +1,95 @@
+rEGIStro calendar
+   entero start_hour
+   entero end_hour
+   cadena[3] start_time
+   cadena[3] end_time
+fin registro
+
+registro subject
+   cadena[10] name
+   entero credits
+   calendar horario
+fin registro
+
+subject sub1
+subject sub2
+subject sub3
+entero i
+
+Procedimiento AssignSubjects
+inicio
+   sub1.name <- "Lenguajes de programaci�n"
+   sub1.credits <- 3
+   sub1.horario.start_hour <- 11
+   sub1.horario.end_hour <- 1
+   sub1.horario.start_time <- "am"
+   sub1.horario.end_time <- "pm"
+   
+   sub2.name <- "Modelos estoc�sticos"
+   sub2.credits <- 3
+   sub2.horario.start_hour <- 2
+   sub2.horario.end_hour <- 4
+   sub2.horario.start_time <- "pm"
+   sub2.horario.end_time <- "pm"
+   
+   sub3.name <- "Taller de invencion"
+   sub3.credits <- 3
+   sub3.horario.start_hour <- 4
+   sub3.horario.end_hour <- 6
+   sub3.horario.start_time <- "pm"
+   sub3.horario.end_time <- "pm"
+fin
+
+
+procedimiento ReportSubjects
+inicio
+   
+   escriba "--------------------------------"
+   llamar nueva_linea
+   escriba "SUBJECT NUMBER ",(1)
+   llamar nueva_linea
+   escriba "Name: ",sub1.name
+   llamar nueva_linea
+   escriba "Credits: ",sub1.credits
+   llamar nueva_linea
+   escriba "Class starts at ",sub1.horario.start_hour,":00 ",sub1.horario.end_time
+   llamar nueva_linea
+   escriba "Class ends at ",sub1.horario.end_hour,":00 ",sub1.horario.end_time
+   llamar nueva_linea
+   escriba "--------------------------------"
+   llamar nueva_linea
+   escriba "--------------------------------"
+   llamar nueva_linea
+   escriba "SUBJECT NUMBER ",(2)
+   llamar nueva_linea
+   escriba "Name: ",sub2.name
+   llamar nueva_linea
+   escriba "Credits: ",sub2.credits
+   llamar nueva_linea
+   escriba "Class starts at ",sub2.horario.start_hour,":00 ",sub2.horario.end_time
+   llamar nueva_linea
+   escriba "Class ends at ",sub2.horario.end_hour,":00 ",sub2.horario.end_time
+   llamar nueva_linea
+   escriba "--------------------------------"
+   llamar nueva_linea
+   escriba "--------------------------------"
+   llamar nueva_linea
+   escriba "SUBJECT NUMBER ",(3)
+   llamar nueva_linea
+   escriba "Name: ",sub3.name
+   llamar nueva_linea
+   escriba "Credits: ",sub3.credits
+   llamar nueva_linea
+   escriba "Class starts at ",sub3.horario.start_hour,":00 ",sub3.horario.end_time
+   llamar nueva_linea
+   escriba "Class ends at ",sub3.horario.end_hour,":00 ",sub3.horario.end_time
+   llamar nueva_linea
+   escriba "--------------------------------"
+
+fin
+
+
+inicio
+	llamar assignsubjects()
+	llamar ReportSubjects()
+fin

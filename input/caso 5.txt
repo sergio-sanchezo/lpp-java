@@ -1,0 +1,21 @@
+entero evaluates   
+   
+funcion factorial_recursive(entero n): entero
+entero res
+inicio
+  si n=1 entonces
+     res <-1
+  sino
+     res <- n*factorial_recursive(n-1)
+  fin si
+  
+  retorne res
+
+fin
+
+inicio
+
+  evaluates <- factorial_recursive(factorial_recursive(3))
+  escriba evaluates
+
+fin

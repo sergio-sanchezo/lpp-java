@@ -1,0 +1,35 @@
+// Tringulo de Pascal
+
+entero rows
+entero coef
+entero space
+entero i
+entero j
+
+inicio
+   rows <- 8
+
+   para i <- 0 hasta rows+1 haga
+
+      para space <- 1 hasta rows-i+4 haga
+         escriba " "
+      fin para
+      
+      para j <- 0 hasta i haga
+   
+          si (j=0) o (i=0) entonces
+             coef <- 1
+          sino
+             coef <- coef*(i-j+1)/j
+          fin si
+      
+          escriba coef
+          escriba "   "
+      
+       fin para
+   
+       llamar nueva_linea
+
+    fin para
+
+fin
