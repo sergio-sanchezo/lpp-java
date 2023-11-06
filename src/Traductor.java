@@ -109,15 +109,28 @@ public class Traductor extends GramaticaBaseListener {
         if(tipos.containsKey(var)){
             var = tipos.get(var);
         }
-        System.out.println("private "+ var + " " + ctx.ID().getText() + "(" + ctx.parametrosFP().getText() + ")" + "{");
+        String params = ctx.parametrosFP().getText();
+        if (params == null){
+            System.out.println("private "+ var + " " + ctx.ID().getText() + "()" + "{");
+        }else {
+            System.out.println("private " + var + " " + ctx.ID().getText() + ctx.parametrosFP().getText() + "{");
+        }
     }
     @Override
     public void exitDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
 
         //System.out.println(ctx.sentencia().toString() + ";");
-        System.out.println("return " + ctx.exp().getText() + ";");
+
         printTab();
         System.out.println("}");
+    }
+    @Override
+    public void enterRetorne(GramaticaParser.RetorneContext ctx){
+        System.out.print("return " );
+    }
+    @Override
+    public void exitRetorne(GramaticaParser.RetorneContext ctx){
+        System.out.println("; " );
     }
     @Override
     public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx) {
@@ -134,7 +147,7 @@ public class Traductor extends GramaticaBaseListener {
         }else if (var.contains("cadena[")){
             var = "String";
         }
-        System.out.print(var + " " + ctx.ID().getText());
+        System.out.print(var + " " + formatId(ctx.ID().getText()));
     }
     @Override
     public void exitDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
