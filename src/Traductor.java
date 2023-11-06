@@ -73,11 +73,7 @@ public class Traductor extends GramaticaBaseListener {
     }};
     //Crear lista de palabras reservadas en Java para evitar usarlas
 
-    @Override
-    public void  exitExp(GramaticaParser.ExpContext ctx){
-        printTab();
-        System.out.print(ctx.getText());
-    }
+
     @Override
     public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
         printTab();
@@ -473,11 +469,11 @@ public class Traductor extends GramaticaBaseListener {
         System.out.print("^");
     }
     @Override
-    public void enterPlusMinus(GramaticaParser.PlusMinusContext ctx){
+    public void enterPlusMinus(GramaticaParser.PlusMinusContext ctx){ //Imprime + o -
         System.out.print(ctx.getText());
     }
     @Override
-    public void enterMultiDiv(GramaticaParser.MultiDivContext ctx){
+    public void enterMultiDiv(GramaticaParser.MultiDivContext ctx){ //Imprime * o /
         System.out.print(ctx.getText());
     }
     @Override
@@ -489,7 +485,7 @@ public class Traductor extends GramaticaBaseListener {
         System.out.print("%");
     }
     @Override
-    public void enterTkn_minus(GramaticaParser.Tkn_minusContext ctx){
+    public void enterTkn_minus(GramaticaParser.Tkn_minusContext ctx){ //Imprime menos solo para expresiones negativas
         System.out.print("-");
     }
     @Override
@@ -532,24 +528,14 @@ public class Traductor extends GramaticaBaseListener {
     public void enterTkn_comma(GramaticaParser.Tkn_commaContext ctx){
         System.out.print(",");
     }
-    public int formatInt(String number){
-        return Integer.parseInt(number);
-    }
-    public Double formatDouble(String number){
-        return Double.parseDouble(number);
-    }
-    public String formatId(String id){
-        if(!id.isEmpty() && id.charAt(0)=='_'){
-            return "a"+id; //Evita variables llamadas __... agragando un caracter valido para el nombre
-        }
-        return id;
-    }
+
     @Override
     public void enterExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
         if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
                 System.out.print("(int) (");
         }
     }
+
     @Override
     public void exitExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
         if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
@@ -568,7 +554,18 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         System.out.println("}");
     }
-
+    public int formatInt(String number){
+        return Integer.parseInt(number);
+    }
+    public Double formatDouble(String number){
+        return Double.parseDouble(number);
+    }
+    public String formatId(String id){
+        if(!id.isEmpty() && id.charAt(0)=='_'){
+            return "a"+id; //Evita variables llamadas __... agragando un caracter valido para el nombre
+        }
+        return id;
+    }
     /*
     * @Override
     public void enterExpMod(GramaticaParser.ExpModContext ctx){
