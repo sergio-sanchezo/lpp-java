@@ -21,6 +21,7 @@ public class Traductor extends GramaticaBaseListener {
     private int tab=2;
     private Map<String,String> datatype=new HashMap<String,String>();
     static String currentFP="";
+    static String currentR="";
     static private Map<String,String> temporalDataType=new HashMap<String,String>(); //Uso dentro de funciones
     //1: int,2:double,  3: boolean, 4: char, 5: string,
     static private Map<String,Map<String,String>> datatypeRegister=new HashMap<String,Map<String,String>>();
@@ -102,6 +103,21 @@ public class Traductor extends GramaticaBaseListener {
         for(int i  = 0; i <tam ; i++){
             System.out.print(", "+formatId(ctx.ID().get(i).getText()));
         }
+    }
+    @Override
+    public void enterDeclaracionesV(GramaticaParser.DeclaracionesVContext ctx){
+        printTab();
+        System.out.println("//Declaracion de variables globales (flujo principal)");
+    }
+    @Override
+    public void enterDeclaracionesR(GramaticaParser.DeclaracionesRContext ctx){
+        printTab();
+        System.out.println("//Declaracion de Registros (convertidos en clases)");
+    }
+    @Override
+    public void enterDeclaracionesFP(GramaticaParser.DeclaracionesFPContext ctx){
+        printTab();
+        System.out.println("//Declaracion de funciones y procedimientos (convertidos en funciones static)");
     }
     @Override
     public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
@@ -217,7 +233,8 @@ public class Traductor extends GramaticaBaseListener {
         String idFormateado=formatId(ctx.ID().getText());
         Map<String,String>  currentDataType;
 
-        if(ctx.parent instanceof GramaticaParser.ArgumentosContext){
+        if(ctx.parent instanceof GramaticaParser.ArgumentosContext){ //Declarada al interior de un registro
+            currentDataType=datatypeRegister.get(currentR);
 
         }else{
             if(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext){
@@ -225,19 +242,20 @@ public class Traductor extends GramaticaBaseListener {
             }else{ //Is instance of DeclaracionesV_FPContext
                 currentDataType=temporalDataType;
             }
-            if(ctx.tipo().ENTERO()!=null){//1: int,2:double,  3: boolean, 4: char, 5: string,
-                currentDataType.put(idFormateado,"int");
-            }else if(ctx.tipo().REAL()!=null){
-                currentDataType.put(idFormateado,"double");
-            }else if(ctx.tipo().BOOLEANO()!=null){
-                currentDataType.put(idFormateado,"boolean");
-            }else if(ctx.tipo().CARACTER()!=null){
-                currentDataType.put(idFormateado,"char");
-            }else if(ctx.tipo().CADENA()!=null){
-                currentDataType.put(idFormateado,"String");
-            }else{
-                currentDataType.put(idFormateado,formatId(ctx.tipo().ID().getText())); //Agrega a la declaracion de tipo distinto (nueva clase)
-            }
+
+        }
+        if(ctx.tipo().ENTERO()!=null){//1: int,2:double,  3: boolean, 4: char, 5: string,
+            currentDataType.put(idFormateado,"int");
+        }else if(ctx.tipo().REAL()!=null){
+            currentDataType.put(idFormateado,"double");
+        }else if(ctx.tipo().BOOLEANO()!=null){
+            currentDataType.put(idFormateado,"boolean");
+        }else if(ctx.tipo().CARACTER()!=null){
+            currentDataType.put(idFormateado,"char");
+        }else if(ctx.tipo().CADENA()!=null){
+            currentDataType.put(idFormateado,"String");
+        }else{
+            currentDataType.put(idFormateado,formatId(ctx.tipo().ID().getText())); //Agrega a la declaracion de tipo distinto (nueva clase)
         }
 
 
@@ -713,12 +731,14 @@ public class Traductor extends GramaticaBaseListener {
     public void enterDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
         printTab();
         System.out.printf("public static class %s{\n",formatId(ctx.ID().getText()));
+        currentR=formatId(ctx.ID().getText());
         tab++;
     }
     @Override
     public void exitDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
         tab--;
         printTab();
+        currentR="";
         System.out.println("}");
     }
     @Override
