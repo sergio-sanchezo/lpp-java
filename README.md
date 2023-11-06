@@ -1,5 +1,4 @@
 # Translator from LPP to Java
-***
 ## Members
 * Julian Camilo Zambrano Lopez
 * Gabriel Alejandro Otalora Gomez
