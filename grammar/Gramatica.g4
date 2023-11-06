@@ -62,10 +62,9 @@ atributo: TKN_PERIOD ID indexYAtributo;
 doWhileCon: exp;
 exp: expRelacional expAux?; //Completar
 expAux: operadorLogico expRelacional expAux?;
-expRelacional: expPotencia expRelacionalAux?;
-expRelacionalAux:operadorRelacional expPotencia;
-expPotencia: expPlusMinus expPotenciaAux?;
-expPotenciaAux: tkn_power expPlusMinus expPotenciaAux?;
+expRelacional: expPlusMinus expRelacionalAux?;
+expRelacionalAux:operadorRelacional expPlusMinus;
+
 expPlusMinus: expMultiDiv expPlusMinusAux?;
 expPlusMinusAux: plusMinus expMultiDiv expPlusMinusAux?;
 /*expMultiDiv: expDivEntera expMultiDivAux?;
@@ -74,8 +73,10 @@ expDivEntera: expMod expDivEnteraAux?;
 expDivEnteraAux: div expMod expDivEnteraAux?;
 expMod: expSign expModAux?;
 expModAux: mod expSign expModAux?;*/
-expMultiDiv: expSign expMultiDivAux?;
-expMultiDivAux: (div|mod|multiDiv) expSign expMultiDivAux?;
+expMultiDiv: expPotencia expMultiDivAux?;
+expMultiDivAux: (div|mod|multiDiv) expPotencia expMultiDivAux?;
+expPotencia: expSign expPotenciaAux?;
+expPotenciaAux: tkn_power expSign expPotenciaAux?;
 expSign: tkn_minus? expBase;
 expBase: TKN_OPENING_PAR exp TKN_CLOSING_PAR #expParentesis
         |TKN_INTEGER #expInt
