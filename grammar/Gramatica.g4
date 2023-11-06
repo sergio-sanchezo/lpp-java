@@ -19,9 +19,10 @@ tipo: ENTERO|
        CADENA TKN_OPENING_BRA TKN_INTEGER TKN_CLOSING_BRA|
        ID;
 
-declaracionF: FUNCION ID parametrosFP? TKN_COLON tipoRetorno declaracionV* INICIO sentencia* retorne? FIN; //Incluye declaraciones que son iguales a las del main, y puede o no tener parametros, al igual que retorne
+declaracionF: FUNCION ID parametrosFP? TKN_COLON tipoRetorno declaracionesV_FP INICIO sentencia* retorne? FIN; //Incluye declaraciones que son iguales a las del main, y puede o no tener parametros, al igual que retorne
+declaracionesV_FP: declaracionV*;
 retorne: RETORNE exp;
-declaracionP:PROCEDIMIENTO ID parametrosFP? declaracionV* INICIO sentencia* FIN;
+declaracionP:PROCEDIMIENTO ID parametrosFP? declaracionesV_FP INICIO sentencia* FIN;
 parametrosFP: TKN_OPENING_PAR listaParametrosFP TKN_CLOSING_PAR;
 listaParametrosFP:   parametro (TKN_COMMA parametro)*; //
 parametro: VAR? tipo ID;

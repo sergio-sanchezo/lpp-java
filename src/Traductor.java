@@ -3,7 +3,15 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 public class Traductor extends GramaticaBaseListener {
+    public  class DatatypeContext{
+        DatatypeContext parent;
+
+        public DatatypeContext(){
+
+        }
+    }
     private void printTab(){
         for(int i=0;i<tab;i++){
             System.out.print("\t");
@@ -11,9 +19,11 @@ public class Traductor extends GramaticaBaseListener {
     }
     private String idFor=""; //Usado para almacenar el valor del id del for
     private int tab=2;
-    private Map<String,Integer> datatype=new HashMap<String,Integer>();
+    private Map<String,String> datatype=new HashMap<String,String>();
+    static String currentFP="";
+    static private Map<String,String> temporalDataType=new HashMap<String,String>(); //Uso dentro de funciones
     //1: int,2:double,  3: boolean, 4: char, 5: string,
-
+    static private Map<String,Map<String,String>> datatypeRegister=new HashMap<String,Map<String,String>>();
 
 
 
@@ -31,32 +41,29 @@ public class Traductor extends GramaticaBaseListener {
 
     @Override
     public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
-        printTab();
-        /*String var = ctx.tipo().getText();
-        if(tipos.containsKey(var)){
-            var = tipos.get(var);
+        if(!(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext)){
+            printTab();
         }
-        if(ctx.TKN_INTEGER().size()==1){
-            System.out.println(var + "[] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) +"]"+ ";");
-        }else if (ctx.TKN_INTEGER().size()==2){
-            System.out.println(var + "[][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) + "]"+ "[" +ctx.TKN_INTEGER(1)+ "]"+ ";");
-        }else if (ctx.TKN_INTEGER().size()==3) {
-            System.out.println(var + "[][][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0)+"]" + "[" +ctx.TKN_INTEGER(1)+ "]" + "[" + ctx.TKN_INTEGER(2) +"]"+ ";");
-        }*/
-        /*
-        * put("entero","int");
-        put("real","double");
-        put("booleano","boolean");
-        put("caracter","char");
-        put("cadena","String");*/
-        if(ctx.tipo().ID()!=null){            System.out.print(formatId(ctx.tipo().getText()));}
-        else if(ctx.tipo().ENTERO()!=null){            System.out.print("int");
+
+        if(ctx.tipo().ID()!=null){
+            System.out.print(formatId(ctx.tipo().getText()));}
+        else if(ctx.tipo().ENTERO()!=null){////1: int,2:double,  3: boolean, 4: char, 5: string,
+            System.out.print("int");
+            datatype.put(formatId(ctx.ID().getText()),"int");
         }
-        else if(ctx.tipo().REAL()!=null){            System.out.print("double");
+        else if(ctx.tipo().REAL()!=null){
+            datatype.put(formatId(ctx.ID().getText()),"double");
+            System.out.print("double");
         }
-        else if(ctx.tipo().CARACTER()!=null){            System.out.print("char");
-        }else if(ctx.tipo().CADENA()!=null){            System.out.print("String");
-        }else if(ctx.tipo().BOOLEANO()!=null){            System.out.print("boolean");
+        else if(ctx.tipo().CARACTER()!=null){
+            datatype.put(formatId(ctx.ID().getText()),"char");
+            System.out.print("char");
+        }else if(ctx.tipo().CADENA()!=null){
+            datatype.put(formatId(ctx.ID().getText()),"String");
+            System.out.print("String");
+        }else if(ctx.tipo().BOOLEANO()!=null){
+            datatype.put(formatId(ctx.ID().getText()),"boolean");
+            System.out.print("boolean");
         }
 
 
@@ -98,6 +105,8 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
+        currentFP=formatId(ctx.ID().getText());
+        temporalDataType=new HashMap<String,String>();
         printTab();
         String var = ctx.tipoRetorno().getText().toLowerCase();
         if(tipos.containsKey(var)){
@@ -151,6 +160,7 @@ public class Traductor extends GramaticaBaseListener {
     public void exitDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
 
         //System.out.println(ctx.sentencia().toString() + ";");
+        currentFP="";
         tab--;
         printTab();
         System.out.println("}");
@@ -168,6 +178,8 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx) {
+        currentFP=formatId(ctx.ID().getText());
+        temporalDataType=new HashMap<String,String>();
         printTab();
         System.out.print("private static void "+ formatId(ctx.ID().getText()) );
         tab++;
@@ -177,6 +189,7 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void exitDeclaracionP(GramaticaParser.DeclaracionPContext ctx) {
+        currentFP="";
         tab--;
         printTab();
         System.out.println("}");
@@ -201,17 +214,36 @@ public class Traductor extends GramaticaBaseListener {
             System.out.print(var + " " + formatId(ctx.ID().getText()));
 
         }
-        if(ctx.tipo().ENTERO()!=null){////1: int,2:double,  3: boolean, 4: char, 5: string,
-            datatype.put(formatId(ctx.ID().getText()),1);
-        }else if(ctx.tipo().REAL()!=null){
-            datatype.put(formatId(ctx.ID().getText()),2);
-        }else if(ctx.tipo().BOOLEANO()!=null){
-            datatype.put(formatId(ctx.ID().getText()),3);
-        }else if(ctx.tipo().CARACTER()!=null){
-            datatype.put(formatId(ctx.ID().getText()),4);
-        }else if(ctx.tipo().CADENA()!=null){
-            datatype.put(formatId(ctx.ID().getText()),5);
+        String idFormateado=formatId(ctx.ID().getText());
+        Map<String,String>  currentDataType;
+
+        if(ctx.parent instanceof GramaticaParser.ArgumentosContext){
+
+        }else{
+            if(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext){
+                currentDataType=datatype;
+            }else{ //Is instance of DeclaracionesV_FPContext
+                currentDataType=temporalDataType;
+            }
+            if(ctx.tipo().ENTERO()!=null){//1: int,2:double,  3: boolean, 4: char, 5: string,
+                currentDataType.put(idFormateado,"int");
+            }else if(ctx.tipo().REAL()!=null){
+                currentDataType.put(idFormateado,"double");
+            }else if(ctx.tipo().BOOLEANO()!=null){
+                currentDataType.put(idFormateado,"boolean");
+            }else if(ctx.tipo().CARACTER()!=null){
+                currentDataType.put(idFormateado,"char");
+            }else if(ctx.tipo().CADENA()!=null){
+                currentDataType.put(idFormateado,"String");
+            }else{
+                currentDataType.put(idFormateado,formatId(ctx.tipo().ID().getText())); //Agrega a la declaracion de tipo distinto (nueva clase)
+            }
         }
+
+
+
+
+
 
 
     }
@@ -290,29 +322,70 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void exitIdLectura(GramaticaParser.IdLecturaContext ctx){
-        int tipo;
+        String tipo;
+        String id="";
         System.out.print("=");
-        if(datatype.containsKey(ctx.idConIndexYAtributo().ID().getText())){
-            tipo=datatype.get(ctx.idConIndexYAtributo().ID().getText());
+        id=formatId(ctx.idConIndexYAtributo().ID().getText());
+        Map<String,String>  currentDataType;
+        if(currentFP.equals("")){
+
+            currentDataType=datatype;
+        }else{
+            currentDataType=temporalDataType;
+        }
+        if(currentDataType.containsKey(id)){
+            tipo=currentDataType.get(id);
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
-                case 1: //Inte input
+                case "int": //Inte input
                     System.out.println("scanner.nextInt();");
                     break;
-                case 2: //Real input
+                case "double": //Real input
                     System.out.println("scanner.nextDouble();"); //completar
                     break;
-                case 3: //Boolean input
+                case "boolean": //Boolean input
                     System.out.println("scanner.nextBoolean();"); //completar
                     break;
-                case 4: //Character input
+                case "char": //Character input
                     System.out.println("scanner.nextLine().charAt(0);"); //completar
                     break;
-                case 5: //String input
+                case "String": //String input
                     System.out.println("scanner.nextLine();");
                     break;
+                default:
+                    System.out.println(temporalDataType);
+                    //buscarDataType(tipo,ctx.idConIndexYAtributo().indexYAtributo().atributo(),0); //Se le pasa el atributo
+
             }
-        }else{
-            System.out.println();
+        }
+    }
+
+    private void buscarDataType(String id, List<GramaticaParser.AtributoContext> atributoContextList, int idx) {
+        Map<String,String> datatypeContext= datatypeRegister.get(id); //Aqui hay que buscar
+        GramaticaParser.AtributoContext atributoContext=atributoContextList.get(idx);
+        String tipo;
+        String atributeId=formatId(atributoContext.ID().getText());
+        if(datatypeContext.containsKey(atributeId)){
+            tipo=datatype.get(atributeId);
+            switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
+                case "int": //Inte input
+                    System.out.println("scanner.nextInt();");
+                    break;
+                case "double": //Real input
+                    System.out.println("scanner.nextDouble();"); //completar
+                    break;
+                case "boolean": //Boolean input
+                    System.out.println("scanner.nextBoolean();"); //completar
+                    break;
+                case "char": //Character input
+                    System.out.println("scanner.nextLine().charAt(0);"); //completar
+                    break;
+                case "String": //String input
+                    System.out.println("scanner.nextLine();");
+                    break;
+                default:
+                    //buscarDataType("",""); //Se le pasa el atributo
+
+            }
         }
     }
 
