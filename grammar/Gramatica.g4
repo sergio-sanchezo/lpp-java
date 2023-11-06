@@ -6,7 +6,7 @@ declaracionesR: declaracionR*;
 declaracionesV:(declaracionV | declaracionArray)* ;
 declaracionesFP: (declaracionF|declaracionP)*;
 declaracionR: REGISTRO ID atributos FIN REGISTRO;
-atributos: declaracionV* ;
+atributos: (declaracionV| declaracionArray)* ;
 decCommaId: (TKN_COMMA ID)*;
 declaracionV: tipo ID decCommaId;
 declaracionArray: ARREGLO TKN_OPENING_BRA TKN_INTEGER (TKN_COMMA TKN_INTEGER)* TKN_CLOSING_BRA DE tipo ID;
