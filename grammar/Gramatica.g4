@@ -1,6 +1,7 @@
 grammar Gramatica;
 //Reglas gramticales
-s: declaracionesR declaracionesV declaracionesFP INICIO sentencia* FIN;
+s: declaracionesR declaracionesV declaracionesFP main;
+main: INICIO sentencia* FIN;
 declaracionesR: declaracionR*;
 declaracionesV:(declaracionV | declaracionArray)* ;
 declaracionesFP: (declaracionF|declaracionP)*;
@@ -25,18 +26,21 @@ listaParametrosFP:   parametro (TKN_COMMA parametro)*; //
 parametro: VAR? tipo ID;
 tipoRetorno: ENTERO | REAL | BOOLEANO | CARACTER | ID | CADENA TKN_OPENING_BRA TKN_INTEGER TKN_CLOSING_BRA;
 sentencia:
-      idConIndexYAtributo TKN_ASSIGN exp #sentenceAssign
+      idConIndexYAtributo tkn_assign exp #sentenceAssign
       |ESCRIBA expEscriba (',' expEscriba)* #sentenceWrite
       |LEA idLectura (TKN_COMMA idLectura)* #sentenceRead
-      |SI expCondicional ENTONCES sentencia* sino?  FIN SI  #conditional
-      |MIENTRAS expCondicional HAGA sentencia* FIN MIENTRAS#while //Sergio
-      |REPITA sentencia* HASTA expCondicional #doWhile //Sergio
-      |PARA paraIniCon HAGA sentencia* FIN PARA #for
+      |SI expCondicional entonces sentencia* sino?  FIN SI  #conditional
+      |MIENTRAS expCondicional haga sentencia* FIN MIENTRAS#while //Sergio
+      |REPITA sentencia* HASTA doWhileCon #doWhile //Sergio
+      |PARA paraIniCon haga sentencia* FIN PARA #for
       |LLAMAR subrutinaLlamada #callFunction //Sergio
-      |CASO  idCaso (expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
+      |CASO  idCaso (cuerpoCaso)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
 ;
-
+tkn_assign: TKN_ASSIGN;
+entonces: ENTONCES;
+haga: HAGA;
 idCaso: idConIndexYAtributo;
+cuerpoCaso: expLiteral (TKN_COMMA expLiteral)* TKN_COLON sentencia*;
 idLectura: idConIndexYAtributo; //new
 expEscriba: exp;    //new
 hastaPara: HASTA;
@@ -44,34 +48,48 @@ expLiteral: TKN_INTEGER| TKN_STRING|TKN_CHAR|TKN_REAL| VERDADERO | FALSO;
 colonCaso: TKN_COLON;
 sinoCaso: SINO;
 subrutinaLlamada: ID argumentos?| NUEVA_LINEA;
-argumentos: TKN_OPENING_PAR (exp) TKN_CLOSING_PAR;
-paraIniCon : idConIndexYAtributo TKN_ASSIGN exp hastaPara exp; //Inicialización e incremento
+argumentos: TKN_OPENING_PAR (exp (tkn_comma exp)* )? TKN_CLOSING_PAR;
+tkn_comma:TKN_COMMA;
+paraIniCon : idConIndexYAtributo tkn_assign exp hastaPara exp; //Inicialización e incremento
 expCondicional: exp; //se usa expresión aparte para facilitar traducción
 sino: SINO sentencia*; //Se hizo regla aparte por facilidad de la traducción (corchetes)
-idConIndexYAtributo: ID (indexYAtributo|argumentos);
+idConIndexYAtributo: ID indexYAtributo;
 indexYAtributo: indexAcceso* atributo*;
-indexAcceso: TKN_OPENING_BRA TKN_INTEGER listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
-listaIndex:',' TKN_INTEGER; //Acceso matriz de varias dimensiones (no se usa TKN_COMMA para facilitar la traducción)
+indexAcceso: TKN_OPENING_BRA (TKN_INTEGER|idConIndexYAtributo) listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
+listaIndex:',' (TKN_INTEGER|idConIndexYAtributo); //Acceso matriz de varias dimensiones (no se usa TKN_COMMA para facilitar la traducción)
 atributo: TKN_PERIOD ID indexYAtributo;
-
-listaExpr
-    : expr ( ',' expr )*
-    ;
-exp: expr*;
-expr
-    : '(' expr ')'
-    | expLiteral
-    | ID
-    | '-' expr
-    |<assoc=right> expr '^' expr
-    | expr ( TKN_TIMES | TKN_DIV | DIV| MOD ) expr
-    | expr ( TKN_PLUS | TKN_MINUS ) expr
-    | expr ( TKN_EQUAL | TKN_NEQ | TKN_LEQ | TKN_GEP | TKN_LESS |TKN_GREATER ) expr
-    | expr AND expr
-    | expr OR expr
-    ;
-
-
+doWhileCon: exp;
+exp: expRelacional expAux?; //Completar
+expAux: operadorLogico expRelacional expAux?;
+expRelacional: expPotencia expRelacionalAux?;
+expRelacionalAux:operadorRelacional expPotencia;
+expPotencia: expPlusMinus expPotenciaAux?;
+expPotenciaAux: tkn_power expPlusMinus expPotenciaAux?;
+expPlusMinus: expMultiDiv expPlusMinusAux?;
+expPlusMinusAux: plusMinus expMultiDiv expPlusMinusAux?;
+/*expMultiDiv: expDivEntera expMultiDivAux?;
+expMultiDivAux: multiDiv expDivEntera expMultiDivAux?;
+expDivEntera: expMod expDivEnteraAux?;
+expDivEnteraAux: div expMod expDivEnteraAux?;
+expMod: expSign expModAux?;
+expModAux: mod expSign expModAux?;*/
+expMultiDiv: expSign expMultiDivAux?;
+expMultiDivAux: (div|mod|multiDiv) expSign expMultiDivAux?;
+expSign: tkn_minus? expBase;
+expBase: TKN_OPENING_PAR exp TKN_CLOSING_PAR #expParentesis
+        |TKN_INTEGER #expInt
+         |TKN_STRING #expString
+         |TKN_REAL #expDouble
+         |TKN_CHAR #expChar
+         |VERDADERO #verdadero
+         |FALSO #falso
+         |id #expId
+;
+id: ID (indexYAtributo|argumentos);
+tkn_power:TKN_POWER;
+div: DIV;
+mod:MOD;
+tkn_minus: TKN_MINUS;
 //Operadores logicos y relacionales
 operadorRelacional: TKN_EQUAL|TKN_NEQ|TKN_LEQ|TKN_LESS|TKN_GEP|TKN_GREATER;
 operadorLogico: AND|OR;
