@@ -95,7 +95,7 @@ public class Traductor extends GramaticaBaseListener {
         }else if(ctx.tipo().BOOLEANO()!=null){            System.out.print("boolean");
         }
         for(GramaticaParser.DeclaracionArrayLoopContext loopCtx:ctx.declaracionArrayLoop()){
-            for(TerminalNode numero:loopCtx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaración (lado izquierdo
+            for(TerminalNode numero:loopCtx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaracion (lado izquierdo
                 System.out.printf("[%s]",numero.getText());
             }
         }
@@ -116,7 +116,7 @@ public class Traductor extends GramaticaBaseListener {
 
         int i=0;
         for(GramaticaParser.DeclaracionArrayLoopContext loopCtx:ctx.declaracionArrayLoop()){
-            for(TerminalNode numero:loopCtx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaración (lado izquierdo
+            for(TerminalNode numero:loopCtx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaracion (lado izquierdo
                 printTab();
                 System.out.printf("for(int auxArrayRegister%d=0;auxArrayRegister%d<%s;auxArrayRegister%d++){\n",i,i,numero.getText(),i);
                 tab++;
@@ -141,7 +141,7 @@ public class Traductor extends GramaticaBaseListener {
 
     @Override
     public void enterDeclaracionArrayLoop(GramaticaParser.DeclaracionArrayLoopContext ctx){
-        for(TerminalNode numero:ctx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaración (lado izquierdo
+        for(TerminalNode numero:ctx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaracion (lado izquierdo
             System.out.print("[]");
         }
     }
