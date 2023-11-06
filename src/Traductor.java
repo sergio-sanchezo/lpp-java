@@ -352,7 +352,7 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void enterDoWhileCon(GramaticaParser.DoWhileConContext ctx) {
         printTab();
-        System.out.print("} while (");
+        System.out.print("} while (!");
     }
 
     @Override
@@ -614,9 +614,9 @@ public class Traductor extends GramaticaBaseListener {
     }
     public String formatId(String id){
         if(!id.isEmpty() && id.charAt(0)=='_'){
-            return "a"+id; //Evita variables llamadas __... agragando un caracter valido para el nombre
+            return "a"+id.toLowerCase(); //Evita variables llamadas __... agragando un caracter valido para el nombre
         }
-        return id.toLowerCase();
+        return id.toLowerCase(); //handle non handle sensitive
     }
     /*
     * @Override
