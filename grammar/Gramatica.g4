@@ -32,7 +32,7 @@ sentencia:
       |SI expCondicional entonces sentencia* sino?  FIN SI  #conditional
       |MIENTRAS expCondicional haga sentencia* FIN MIENTRAS#while //Sergio
       |REPITA sentencia* HASTA doWhileCon #doWhile //Sergio
-      |PARA paraIniCon HAGA sentencia* FIN PARA #for
+      |PARA paraIniCon haga sentencia* FIN PARA #for
       |LLAMAR subrutinaLlamada #callFunction //Sergio
       |CASO  idCaso (cuerpoCaso)+ (sinoCaso colonCaso sentencia*)? FIN CASO  #switch
 ;
@@ -50,13 +50,13 @@ sinoCaso: SINO;
 subrutinaLlamada: ID argumentos?| NUEVA_LINEA;
 argumentos: TKN_OPENING_PAR (exp (tkn_comma exp)* )? TKN_CLOSING_PAR;
 tkn_comma:TKN_COMMA;
-paraIniCon : idConIndexYAtributo TKN_ASSIGN exp hastaPara exp; //Inicialización e incremento
+paraIniCon : idConIndexYAtributo tkn_assign exp hastaPara exp; //Inicialización e incremento
 expCondicional: exp; //se usa expresión aparte para facilitar traducción
 sino: SINO sentencia*; //Se hizo regla aparte por facilidad de la traducción (corchetes)
 idConIndexYAtributo: ID indexYAtributo;
 indexYAtributo: indexAcceso* atributo*;
-indexAcceso: TKN_OPENING_BRA TKN_INTEGER listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
-listaIndex:',' TKN_INTEGER; //Acceso matriz de varias dimensiones (no se usa TKN_COMMA para facilitar la traducción)
+indexAcceso: TKN_OPENING_BRA (TKN_INTEGER|idConIndexYAtributo) listaIndex* TKN_CLOSING_BRA; //Se saca aparte para facilitar el proceso de traducción
+listaIndex:',' (TKN_INTEGER|idConIndexYAtributo); //Acceso matriz de varias dimensiones (no se usa TKN_COMMA para facilitar la traducción)
 atributo: TKN_PERIOD ID indexYAtributo;
 doWhileCon: exp;
 exp: expRelacional expAux?; //Completar
