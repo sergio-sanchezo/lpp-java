@@ -12,56 +12,11 @@ public class Traductor extends GramaticaBaseListener {
     private String idFor=""; //Usado para almacenar el valor del id del for
     private int tab=2;
     private Map<String,Integer> datatype=new HashMap<String,Integer>();
-    //1: string,2:char,  3: double, 4: int, 5: boolean,
+    //1: int,2:double,  3: boolean, 4: char, 5: string,
 
 
 
-    final private Map<Integer, String> KEYWORDS = new HashMap<Integer, String>(){{
-        put(GramaticaLexer.INICIO,"");
-        put(GramaticaLexer.FIN,"");
-        put(GramaticaLexer.ENTERO,"int");
-        put(GramaticaLexer.REAL,"double");
-        put(GramaticaLexer.BOOLEANO,"boolean");
-        put(GramaticaLexer.CARACTER,"char");
-        put(GramaticaLexer.CADENA,"String");
-        put(GramaticaLexer.VERDADERO,"true ");
-        put(GramaticaLexer.FALSO,"false ");
-        put(GramaticaLexer.DIV,"pendiente "); //Pendiente
-        put(GramaticaLexer.MOD,"% ");
-        put(GramaticaLexer.ESCRIBA,"");
-        put(GramaticaLexer.REGISTRO,"");
-        put(GramaticaLexer.AND,"& ");
-        put(GramaticaLexer.OR,"| ");
-        put(GramaticaLexer.LEA,"");
-        put(GramaticaLexer.NUEVA_LINEA,"");
-        put(GramaticaLexer.SI,"");
-        put(GramaticaLexer.SINO,""); //Sujeto a cambios
-        put(GramaticaLexer.ENTONCES,"{\n");
-        put(GramaticaLexer.CASO,""); //Pendiente de complementar
-        put(GramaticaLexer.MIENTRAS,"");
-        put(GramaticaLexer.HAGA,"{\n"); //Pendiente de complementar
-        put(GramaticaLexer.REPITA,""); //completar
-        put(GramaticaLexer.HASTA,"");
-        put(GramaticaLexer.PARA,""); //
-        put(GramaticaLexer.PROCEDIMIENTO,"");
-        put(GramaticaLexer.VAR,""); //Completar
-        put(GramaticaLexer.FUNCION,"");
-        put(GramaticaLexer.RETORNE,"return ");
-        put(GramaticaLexer.ARREGLO,""); //Completar
-        put(GramaticaLexer.DE,"");
-        put(GramaticaLexer.LLAMAR,"");
-        put(GramaticaLexer.TKN_ASSIGN,"= ");
-        put(GramaticaLexer.TKN_PERIOD,".");
-        put(GramaticaLexer.TKN_COMMA,""); //No tocar xd
-        put(GramaticaLexer.TKN_OPENING_BRA,""); //Por cuestiones de matrices
-        put(GramaticaLexer.TKN_CLOSING_BRA,"");
-        put(GramaticaLexer.TKN_OPENING_PAR,"");
-        put(GramaticaLexer.TKN_CLOSING_PAR,"");
-        put(GramaticaLexer.TKN_NEQ,"!=");
-        put(GramaticaLexer.TKN_EQUAL,"==");
-        put(GramaticaLexer.TKN_COLON,"");
 
-    }};
 
 
     final private Map<String, String> tipos = new HashMap<String, String>(){{
@@ -245,6 +200,17 @@ public class Traductor extends GramaticaBaseListener {
             }
             System.out.print(var + " " + formatId(ctx.ID().getText()));
 
+        }
+        if(ctx.tipo().ENTERO()!=null){////1: int,2:double,  3: boolean, 4: char, 5: string,
+            datatype.put(formatId(ctx.ID().getText()),1);
+        }else if(ctx.tipo().REAL()!=null){
+            datatype.put(formatId(ctx.ID().getText()),2);
+        }else if(ctx.tipo().BOOLEANO()!=null){
+            datatype.put(formatId(ctx.ID().getText()),3);
+        }else if(ctx.tipo().CARACTER()!=null){
+            datatype.put(formatId(ctx.ID().getText()),4);
+        }else if(ctx.tipo().CADENA()!=null){
+            datatype.put(formatId(ctx.ID().getText()),5);
         }
 
 
@@ -699,33 +665,7 @@ public class Traductor extends GramaticaBaseListener {
         }
         return id.toLowerCase(); //handle non handle sensitive
     }
-    /*
-    * @Override
-    public void enterExpMod(GramaticaParser.ExpModContext ctx){
-        if(ctx.parent instanceof GramaticaParser.ExpDivEnteraContext){
-            GramaticaParser.ExpDivEnteraContext ctxParent= ( GramaticaParser.ExpDivEnteraContext)ctx.parent;
-            if(ctxParent.expDivEnteraAux()!=null){ //Es decir hay un div, hay que parsear la expMod a Integer
 
-            }
-        }
-    }*/
-
-
-    //Terminal handle
-   /* @Override
-    public void visitTerminal(TerminalNode node){
-        String text=node.getText();
-        if(text.charAt(0)=='0'){ //Handle valid java integer and double
-            if(text.contains(".")){ //Real-Double
-                text=Double.parseDouble(text)+"";
-            }else{ //Integer
-                text=Integer.parseInt(text)+"";
-            }
-        }else{ //handle keywords
-            if(KEYWORDS.containsKey(node.getSymbol().getType())){text=KEYWORDS.get(node.getSymbol().getType());} //U
-        }
-        System.out.print(text); //+,-,*,/,...
-    }*/
 
 
 }
