@@ -26,7 +26,7 @@ public class Main {
 
             walker.walk(new Traductor(), tree);
 
-            System.out.println(tree.toStringTree(parser)); // imprime el árbol en forma textual
+            //System.out.println(tree.toStringTree(parser)); // imprime el árbol en forma textual
         } catch (Exception e){
             System.err.println("Error (Test): " + e);
         }
