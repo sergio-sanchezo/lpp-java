@@ -9,7 +9,8 @@ declaracionR: REGISTRO ID atributos FIN REGISTRO;
 atributos: (declaracionV| declaracionArray)* ;
 decCommaId: (TKN_COMMA ID)*;
 declaracionV: tipo ID decCommaId;
-declaracionArray: ARREGLO TKN_OPENING_BRA TKN_INTEGER (TKN_COMMA TKN_INTEGER)* TKN_CLOSING_BRA DE tipo ID;
+declaracionArray: (declaracionArrayLoop)+ tipo ID;
+declaracionArrayLoop: ARREGLO TKN_OPENING_BRA TKN_INTEGER (TKN_COMMA TKN_INTEGER)* TKN_CLOSING_BRA DE;
 tipo: ENTERO|
        REAL|
        BOOLEANO|
