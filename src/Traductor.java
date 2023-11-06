@@ -608,7 +608,7 @@ public class Traductor extends GramaticaBaseListener {
         if(!id.isEmpty() && id.charAt(0)=='_'){
             return "a"+id; //Evita variables llamadas __... agragando un caracter valido para el nombre
         }
-        return id;
+        return id.toLowerCase();
     }
     /*
     * @Override
