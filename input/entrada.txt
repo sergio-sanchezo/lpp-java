@@ -1,7 +1,13 @@
-entero matricula
+entero i
 inicio
-
-t<-(2+8)/4*2
-
-	verdadero /1
+	escriba "Los numeros pares de 0 a 10"
+	llamar nueva_linea
+	para i <- 0 hasta 11 haga
+	 	si i mod 2=0 entonces
+	 	 escriba i
+	 	 si i<>10 entonces
+	 	  llamar nueva_linea
+	 	 fin si
+	 	fin si
+	fin para
 fin
