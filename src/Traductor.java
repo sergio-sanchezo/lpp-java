@@ -473,11 +473,19 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void enterIndexAcceso(GramaticaParser.IndexAccesoContext ctx){
         System.out.print("[");
-        System.out.print(ctx.TKN_INTEGER().getText());
+
+        if(ctx.TKN_INTEGER()!=null){
+            System.out.print(ctx.TKN_INTEGER().getText());
+        }
     }
     @Override
     public void enterListaIndex(GramaticaParser.ListaIndexContext ctx){
-        System.out.printf("][%s",ctx.TKN_INTEGER().getText());
+        if(ctx.TKN_INTEGER()!=null){
+            System.out.printf("][%s",ctx.TKN_INTEGER().getText());
+        }else{
+            System.out.print("][");
+        }
+
     }
     @Override
     public void exitIndexAcceso(GramaticaParser.IndexAccesoContext ctx){
