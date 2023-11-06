@@ -1,8 +1,6 @@
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Traductor extends GramaticaBaseListener {
     public  class DatatypeContext{
@@ -25,7 +23,8 @@ public class Traductor extends GramaticaBaseListener {
     static private Map<String,String> temporalDataType=new HashMap<String,String>(); //Uso dentro de funciones
     //1: int,2:double,  3: boolean, 4: char, 5: string,
     static private Map<String,Map<String,String>> datatypeRegister=new HashMap<String,Map<String,String>>();
-
+    static private Queue<GramaticaParser.DeclaracionArrayContext> initArrayRegQueueTemporal =new LinkedList<GramaticaParser.DeclaracionArrayContext>();
+    static private Queue<GramaticaParser.DeclaracionArrayContext> initArrayRegQueue =new LinkedList<GramaticaParser.DeclaracionArrayContext>();
 
 
 
@@ -84,7 +83,9 @@ public class Traductor extends GramaticaBaseListener {
     public void exitDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
 
         System.out.printf(" %s = new ",formatId(ctx.ID().getText()));
-        if(ctx.tipo().ID()!=null){            System.out.print(formatId(ctx.tipo().getText()));}
+        if(ctx.tipo().ID()!=null){
+            System.out.print(formatId(ctx.tipo().getText()));
+        }
         else if(ctx.tipo().ENTERO()!=null){            System.out.print("int");
         }
         else if(ctx.tipo().REAL()!=null){            System.out.print("double");
@@ -99,7 +100,45 @@ public class Traductor extends GramaticaBaseListener {
             }
         }
         System.out.println(";");
+
+        //En caso de ser un arreglo de registros (array de clases), se deben inicializar:
+        if(ctx.tipo().ID()!=null){ //Si es un arreglo de una clase (registro
+            if(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext){
+                initArrayRegQueue.add(ctx);
+            }else{
+                initArrayRegQueueTemporal.add(ctx); //Registros o funciones
+            }
+
+        }
+
     }
+    public void initRegArray(GramaticaParser.DeclaracionArrayContext ctx){ //Inicializar arreglos de registros dentro del flujo principal
+
+        int i=0;
+        for(GramaticaParser.DeclaracionArrayLoopContext loopCtx:ctx.declaracionArrayLoop()){
+            for(TerminalNode numero:loopCtx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaración (lado izquierdo
+                printTab();
+                System.out.printf("for(int auxArrayRegister%d=0;auxArrayRegister%d<%s;auxArrayRegister%d++){\n",i,i,numero.getText(),i);
+                tab++;
+                i++;
+            }
+        }
+        printTab();
+        System.out.printf("%s",ctx.ID());
+        for(int j=0;j<i;j++){
+            System.out.printf("[auxArrayRegister%d]",j);
+        }
+
+        System.out.printf("=new %s();\n",formatId(ctx.tipo().ID().getText()));
+        while(i>0){
+            tab--;
+            printTab();
+            System.out.print("}\n");
+            i--;
+        }
+    }
+
+
     @Override
     public void enterDeclaracionArrayLoop(GramaticaParser.DeclaracionArrayLoopContext ctx){
         for(TerminalNode numero:ctx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaración (lado izquierdo
@@ -181,13 +220,23 @@ public class Traductor extends GramaticaBaseListener {
             }
         }
     }
-
+    @Override
+    public void exitDeclaracionesV_FP(GramaticaParser.DeclaracionesV_FPContext ctx){
+        if(!initArrayRegQueueTemporal.isEmpty()){ //Se declararon arreglos de registros (clases al interior del registro
+            printTab();
+            System.out.println("//Inicializacion de elementos en matriz o arreglo de registros (al interior de la funcion)");
+            while(!initArrayRegQueueTemporal.isEmpty()){
+                initRegArray(initArrayRegQueueTemporal.poll());
+            }
+        }
+    }
 
     @Override
     public void exitDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
 
         //System.out.println(ctx.sentencia().toString() + ";");
         currentFP="";
+
         tab--;
         printTab();
         System.out.println("}");
@@ -195,7 +244,12 @@ public class Traductor extends GramaticaBaseListener {
 
     @Override
     public void enterRetorne(GramaticaParser.RetorneContext ctx){
+        if(!initArrayRegQueueTemporal.isEmpty()){ //Se declararon arreglos de registros (clases al interior del registro
 
+            while(!initArrayRegQueueTemporal.isEmpty()){
+                initRegArray(initArrayRegQueueTemporal.poll());
+            }
+        }
         printTab();
         System.out.print("return " );
     }
@@ -300,14 +354,24 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         System.out.println("public static void main(String[] args) {");
         tab++;
+
+        if(!initArrayRegQueue.isEmpty()){ //Se declararon arreglos de registros (clases al interior del registro
+            printTab();
+            System.out.println("//Inicializacion de elementos en matriz o arreglo de registros (al interior de la funcion)");
+            while(!initArrayRegQueue.isEmpty()){
+                initRegArray(initArrayRegQueue.poll());
+            }
+        }
+
     }
 
     @Override
     public void exitMain(GramaticaParser.MainContext ctx) {
+        tab--;
         printTab();
         System.out.println("}");
 
-        tab--;
+
     }
 
 
@@ -748,6 +812,17 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void exitDeclaracionR(GramaticaParser.DeclaracionRContext ctx){
+        if(!initArrayRegQueueTemporal.isEmpty()){ //Se declararon arreglos de registros (clases al interior del registro
+            printTab();
+            System.out.printf("public %s(){\n",formatId(ctx.ID().getText()));
+            tab++;
+            while(!initArrayRegQueueTemporal.isEmpty()){
+                initRegArray(initArrayRegQueueTemporal.poll());
+            }
+            tab--;
+            printTab();
+            System.out.println("}");
+        }
         tab--;
         printTab();
         currentR="";
