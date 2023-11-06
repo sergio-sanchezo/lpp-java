@@ -20,7 +20,7 @@ tipo: ENTERO|
        ID;
 
 declaracionF: FUNCION ID parametrosFP? TKN_COLON tipoRetorno declaracionesV_FP INICIO sentencia* retorne? FIN; //Incluye declaraciones que son iguales a las del main, y puede o no tener parametros, al igual que retorne
-declaracionesV_FP: declaracionV*;
+declaracionesV_FP: (declaracionV|declaracionArray)*;
 retorne: RETORNE exp;
 declaracionP:PROCEDIMIENTO ID parametrosFP? declaracionesV_FP INICIO sentencia* FIN;
 parametrosFP: TKN_OPENING_PAR listaParametrosFP TKN_CLOSING_PAR;
