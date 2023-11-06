@@ -77,7 +77,7 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
         printTab();
-        String var = ctx.tipo().getText();
+        /*String var = ctx.tipo().getText();
         if(tipos.containsKey(var)){
             var = tipos.get(var);
         }
@@ -87,6 +87,49 @@ public class Traductor extends GramaticaBaseListener {
             System.out.println(var + "[][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) + "]"+ "[" +ctx.TKN_INTEGER(1)+ "]"+ ";");
         }else if (ctx.TKN_INTEGER().size()==3) {
             System.out.println(var + "[][][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0)+"]" + "[" +ctx.TKN_INTEGER(1)+ "]" + "[" + ctx.TKN_INTEGER(2) +"]"+ ";");
+        }*/
+        /*
+        * put("entero","int");
+        put("real","double");
+        put("booleano","boolean");
+        put("caracter","char");
+        put("cadena","String");*/
+        if(ctx.tipo().ID()!=null){            System.out.print(formatId(ctx.tipo().getText()));}
+        else if(ctx.tipo().ENTERO()!=null){            System.out.print("int");
+        }
+        else if(ctx.tipo().REAL()!=null){            System.out.print("Double");
+        }
+        else if(ctx.tipo().CARACTER()!=null){            System.out.print("char");
+        }else if(ctx.tipo().CADENA()!=null){            System.out.print("String");
+        }else if(ctx.tipo().BOOLEANO()!=null){            System.out.print("boolean");
+        }
+
+
+    }
+    @Override
+    public void exitDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
+
+        System.out.printf(" %s = new ",formatId(ctx.ID().getText()));
+        if(ctx.tipo().ID()!=null){            System.out.print(formatId(ctx.tipo().getText()));}
+        else if(ctx.tipo().ENTERO()!=null){            System.out.print("int");
+        }
+        else if(ctx.tipo().REAL()!=null){            System.out.print("Double");
+        }
+        else if(ctx.tipo().CARACTER()!=null){            System.out.print("char");
+        }else if(ctx.tipo().CADENA()!=null){            System.out.print("String");
+        }else if(ctx.tipo().BOOLEANO()!=null){            System.out.print("boolean");
+        }
+        for(GramaticaParser.DeclaracionArrayLoopContext loopCtx:ctx.declaracionArrayLoop()){
+            for(TerminalNode numero:loopCtx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaración (lado izquierdo
+                System.out.printf("[%s]",numero.getText());
+            }
+        }
+        System.out.println(";");
+    }
+    @Override
+    public void enterDeclaracionArrayLoop(GramaticaParser.DeclaracionArrayLoopContext ctx){
+        for(TerminalNode numero:ctx.TKN_INTEGER()){ //Definicion de cuantas dimensiones tiene la matriz en la declaración (lado izquierdo
+            System.out.print("[]");
         }
     }
 
@@ -156,6 +199,9 @@ public class Traductor extends GramaticaBaseListener {
         System.out.println("class Main {");
         printTab();
         System.out.println("private static Scanner scanner=new Scanner(System.in);");
+        printTab();
+        System.out.println("public static void main(String[] args) {");
+        tab++;
         //Falta scanner y demas librerias necesarias
     }
     @Override
@@ -165,9 +211,7 @@ public class Traductor extends GramaticaBaseListener {
 
     @Override
     public void enterMain(GramaticaParser.MainContext ctx){
-        printTab();
-        System.out.println("public static void main(String[] args) {");
-        tab++;
+
     }
 
     @Override
