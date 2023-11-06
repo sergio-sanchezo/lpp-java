@@ -45,25 +45,36 @@ public class Traductor extends GramaticaBaseListener {
         if(!(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext)){
             printTab();
         }
+        Map<String,String> currentDataType;
+        if(ctx.parent instanceof GramaticaParser.AtributosContext){ //Declarada al interior de un registro
+            currentDataType=datatypeRegister.get(currentR);
+        }else{
+            if(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext){
+                currentDataType=datatype;
+            }else{ //Is instance of DeclaracionesV_FPContext
+                currentDataType=temporalDataType;
+            }
 
+        }
         if(ctx.tipo().ID()!=null){
+            currentDataType.put(formatId(ctx.ID().getText()),formatId(ctx.tipo().getText()));
             System.out.print(formatId(ctx.tipo().getText()));}
         else if(ctx.tipo().ENTERO()!=null){////1: int,2:double,  3: boolean, 4: char, 5: string,
             System.out.print("int");
-            datatype.put(formatId(ctx.ID().getText()),"int");
+            currentDataType.put(formatId(ctx.ID().getText()),"int");
         }
         else if(ctx.tipo().REAL()!=null){
-            datatype.put(formatId(ctx.ID().getText()),"double");
+            currentDataType.put(formatId(ctx.ID().getText()),"double");
             System.out.print("double");
         }
         else if(ctx.tipo().CARACTER()!=null){
-            datatype.put(formatId(ctx.ID().getText()),"char");
+            currentDataType.put(formatId(ctx.ID().getText()),"char");
             System.out.print("char");
         }else if(ctx.tipo().CADENA()!=null){
-            datatype.put(formatId(ctx.ID().getText()),"String");
+            currentDataType.put(formatId(ctx.ID().getText()),"String");
             System.out.print("String");
         }else if(ctx.tipo().BOOLEANO()!=null){
-            datatype.put(formatId(ctx.ID().getText()),"boolean");
+            currentDataType.put(formatId(ctx.ID().getText()),"boolean");
             System.out.print("boolean");
         }
 
@@ -161,9 +172,9 @@ public class Traductor extends GramaticaBaseListener {
                         tipo = "String";
                     }
                     if (i == tam - 1) {
-                        System.out.print(tipo + " " + ctx.parametro().get(i).ID().getText());
+                        System.out.print(tipo + " " + formatId(ctx.parametro().get(i).ID().getText()));
                     } else {
-                        System.out.print(tipo + " " + ctx.parametro().get(i).ID().getText() + ", ");
+                        System.out.print(tipo + " " + formatId(ctx.parametro().get(i).ID().getText()) + ", ");
                     }
                 }
 
@@ -233,9 +244,8 @@ public class Traductor extends GramaticaBaseListener {
         String idFormateado=formatId(ctx.ID().getText());
         Map<String,String>  currentDataType;
 
-        if(ctx.parent instanceof GramaticaParser.ArgumentosContext){ //Declarada al interior de un registro
+        if(ctx.parent instanceof GramaticaParser.AtributosContext){ //Declarada al interior de un registro
             currentDataType=datatypeRegister.get(currentR);
-
         }else{
             if(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext){
                 currentDataType=datatype;
@@ -370,20 +380,19 @@ public class Traductor extends GramaticaBaseListener {
                     System.out.println("scanner.nextLine();");
                     break;
                 default:
-                    System.out.println(temporalDataType);
-                    //buscarDataType(tipo,ctx.idConIndexYAtributo().indexYAtributo().atributo(),0); //Se le pasa el atributo
+                    buscarDataType(tipo,ctx.idConIndexYAtributo().indexYAtributo().atributo(0)); //Se le pasa el atributo
 
             }
         }
     }
 
-    private void buscarDataType(String id, List<GramaticaParser.AtributoContext> atributoContextList, int idx) {
+    private void buscarDataType(String id, GramaticaParser.AtributoContext atributoContext) {
+
         Map<String,String> datatypeContext= datatypeRegister.get(id); //Aqui hay que buscar
-        GramaticaParser.AtributoContext atributoContext=atributoContextList.get(idx);
         String tipo;
         String atributeId=formatId(atributoContext.ID().getText());
         if(datatypeContext.containsKey(atributeId)){
-            tipo=datatype.get(atributeId);
+            tipo=datatypeContext.get(atributeId);
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
                 case "int": //Inte input
                     System.out.println("scanner.nextInt();");
@@ -401,7 +410,7 @@ public class Traductor extends GramaticaBaseListener {
                     System.out.println("scanner.nextLine();");
                     break;
                 default:
-                    //buscarDataType("",""); //Se le pasa el atributo
+                    buscarDataType(tipo,atributoContext.indexYAtributo().atributo(0));
 
             }
         }
@@ -612,7 +621,7 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterAtributo(GramaticaParser.AtributoContext ctx){
-        System.out.printf(".%s",ctx.ID().getText());
+        System.out.printf(".%s",formatId(ctx.ID().getText()));
     }
 
     //Exp Handle
@@ -732,6 +741,9 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         System.out.printf("public static class %s{\n",formatId(ctx.ID().getText()));
         currentR=formatId(ctx.ID().getText());
+        if(!datatypeRegister.containsKey(currentR)){
+            datatypeRegister.put(currentR,new HashMap<String,String>());
+        }
         tab++;
     }
     @Override
