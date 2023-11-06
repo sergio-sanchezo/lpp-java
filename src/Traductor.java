@@ -77,24 +77,7 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void  enterDeclaracionArray(GramaticaParser.DeclaracionArrayContext ctx){
         printTab();
-        /*String var = ctx.tipo().getText();
-        if(tipos.containsKey(var)){
-            var = tipos.get(var);
-        }
-        if(ctx.TKN_INTEGER().size()==1){
-            System.out.println(var + "[] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) +"]"+ ";");
-        }else if (ctx.TKN_INTEGER().size()==2){
-            System.out.println(var + "[][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0) + "]"+ "[" +ctx.TKN_INTEGER(1)+ "]"+ ";");
-        }else if (ctx.TKN_INTEGER().size()==3) {
-            System.out.println(var + "[][][] " + ctx.ID().getText() + "= new " + var + "[" +ctx.TKN_INTEGER(0)+"]" + "[" +ctx.TKN_INTEGER(1)+ "]" + "[" + ctx.TKN_INTEGER(2) +"]"+ ";");
-        }*/
-        /*
-        * put("entero","int");
-        put("real","double");
-        put("booleano","boolean");
-        put("caracter","char");
-        put("cadena","String");*/
-        if(ctx.tipo().ID()!=null){            System.out.print(formatId(ctx.tipo().getText()));}
+        if(ctx.tipo().ID()!=null){ System.out.print(formatId(ctx.tipo().getText()));}
         else if(ctx.tipo().ENTERO()!=null){            System.out.print("int");
         }
         else if(ctx.tipo().REAL()!=null){            System.out.print("Double");
@@ -148,29 +131,66 @@ public class Traductor extends GramaticaBaseListener {
         if(tipos.containsKey(var)){
             var = tipos.get(var);
         }
-        String params = ctx.parametrosFP().getText();
-        if (params == null){
+        if (ctx.parametrosFP() == null){
+            System.out.println("aquí");
             System.out.println("private "+ var + " " + ctx.ID().getText() + "()" + "{");
         }else {
-            System.out.println("private " + var + " " + ctx.ID().getText() + ctx.parametrosFP().getText() + "{");
+            System.out.print("private " + var + " " + ctx.ID().getText());
+
         }
     }
+    @Override
+    public void enterParametrosFP(GramaticaParser.ParametrosFPContext ctx) {
+        System.out.print("(");
+    }
+    @Override
+    public void exitParametrosFP(GramaticaParser.ParametrosFPContext ctx) {
+        System.out.print(")");
+        System.out.println("{");
+
+    }
+    @Override
+    public void  enterListaParametrosFP(GramaticaParser.ListaParametrosFPContext ctx) {
+        if (ctx.parametro() != null) {
+            int tam = ctx.parametro().size();
+            for (int i = 0; i < tam; i++) {
+                if (ctx.parametro().get(i).tipo() != null){
+                    String tipo = ctx.parametro().get(i).tipo().getText();
+                    if (tipos.containsKey(tipo)) {
+                        tipo = tipos.get(tipo);
+                    } else if (tipo.contains("cadena[")) {
+                        tipo = "String";
+                    }
+                    if (i == tam - 1) {
+                        System.out.print(tipo + " " + ctx.parametro().get(i).ID().getText());
+                    } else {
+                        System.out.print(tipo + " " + ctx.parametro().get(i).ID().getText() + ", ");
+                    }
+                }
+
+            }
+        }
+    }
+
+
     @Override
     public void exitDeclaracionF(GramaticaParser.DeclaracionFContext ctx) {
 
         //System.out.println(ctx.sentencia().toString() + ";");
-
         printTab();
         System.out.println("}");
     }
     @Override
     public void enterRetorne(GramaticaParser.RetorneContext ctx){
-        System.out.print("return " );
+        printTab();
+        printTab();
+        System.out.print("return ");
     }
     @Override
     public void exitRetorne(GramaticaParser.RetorneContext ctx){
         System.out.println("; " );
     }
+
     @Override
     public void enterDeclaracionP(GramaticaParser.DeclaracionPContext ctx) {
         printTab();
