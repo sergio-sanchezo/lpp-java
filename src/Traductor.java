@@ -580,7 +580,7 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void enterTkn_power(GramaticaParser.Tkn_powerContext ctx){
-        System.out.print("^");
+        System.out.print(",");
     }
     @Override
     public void enterPlusMinus(GramaticaParser.PlusMinusContext ctx){ //Imprime + o -
@@ -610,6 +610,7 @@ public class Traductor extends GramaticaBaseListener {
     public void exitExpParentesis(GramaticaParser.ExpParentesisContext ctx){
         System.out.print(")");
     }
+
     @Override
     public void enterExpInt(GramaticaParser.ExpIntContext ctx){
         System.out.print(formatInt(ctx.TKN_INTEGER().getText()));
@@ -646,13 +647,26 @@ public class Traductor extends GramaticaBaseListener {
     @Override
     public void enterExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
         if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
-                System.out.print("(int) (");
+                System.out.print("(");
         }
     }
 
     @Override
     public void exitExpMultiDiv(GramaticaParser.ExpMultiDivContext ctx){
         if(ctx.expMultiDivAux()!=null && ctx.expMultiDivAux().div()!=null){ //Tiene una division entera
+            System.out.print(")");
+        }
+    }
+    @Override
+    public void enterExpPotencia(GramaticaParser.ExpPotenciaContext ctx){
+        if(ctx.expPotenciaAux()!=null){
+            System.out.print("Math.pow(");
+        }
+
+    }
+    @Override
+    public void exitExpPotencia(GramaticaParser.ExpPotenciaContext ctx){
+        if(ctx.expPotenciaAux()!=null){
             System.out.print(")");
         }
     }
