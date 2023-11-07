@@ -147,13 +147,7 @@ public class Traductor extends GramaticaBaseListener {
     }
 
 
-    @Override
-    public void enterDecCommaId( GramaticaParser.DecCommaIdContext ctx) {
-        int tam = ctx.ID().size();
-        for(int i  = 0; i <tam ; i++){
-            System.out.print(", "+formatId(ctx.ID().get(i).getText()));
-        }
-    }
+
     @Override
     public void enterDeclaracionesV(GramaticaParser.DeclaracionesVContext ctx){
         printTab();
@@ -281,21 +275,6 @@ public class Traductor extends GramaticaBaseListener {
         if(!(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext)){
             printTab();
         }
-
-        String var = ctx.tipo().getText().toLowerCase();
-        if(ctx.tipo().ID()!=null){
-            System.out.printf("%s %s = new %s()",formatId(ctx.tipo().ID().getText()),formatId(ctx.ID().getText()),formatId(ctx.tipo().ID().getText()));
-
-        }else{
-            if(tipos.containsKey(var)){
-                var = tipos.get(var);
-            }else if (var.contains("cadena[")){
-                var = "String";
-            }
-            System.out.print(var + " " + formatId(ctx.ID().getText()));
-
-        }
-        String idFormateado=formatId(ctx.ID().getText());
         Map<String,String>  currentDataType;
 
         if(ctx.parent instanceof GramaticaParser.AtributosContext){ //Declarada al interior de un registro
@@ -306,21 +285,58 @@ public class Traductor extends GramaticaBaseListener {
             }else{ //Is instance of DeclaracionesV_FPContext
                 currentDataType=temporalDataType;
             }
+        }
+        String var = ctx.tipo().getText().toLowerCase();
 
-        }
-        if(ctx.tipo().ENTERO()!=null){//1: int,2:double,  3: boolean, 4: char, 5: string,
-            currentDataType.put(idFormateado,"int");
-        }else if(ctx.tipo().REAL()!=null){
-            currentDataType.put(idFormateado,"double");
-        }else if(ctx.tipo().BOOLEANO()!=null){
-            currentDataType.put(idFormateado,"boolean");
-        }else if(ctx.tipo().CARACTER()!=null){
-            currentDataType.put(idFormateado,"char");
-        }else if(ctx.tipo().CADENA()!=null){
-            currentDataType.put(idFormateado,"String");
+        if(ctx.tipo().ID()!=null){
+            System.out.printf("%s %s = new %s();\n",formatId(ctx.tipo().ID().getText()),formatId(ctx.ID(0).getText()),formatId(ctx.tipo().ID().getText()));
+            currentDataType.put(formatId(ctx.ID(0).getText()),formatId(ctx.tipo().ID().getText())); //Agrega a la declaracion de tipo distinto (nueva clase)
+            for(int idxID=1;idxID<ctx.ID().size();idxID++){
+                printTab();
+                if(ctx.parent instanceof GramaticaParser.DeclaracionVMainContext){
+                    System.out.print("static ");
+                }
+                System.out.printf("%s %s = new %s();\n",formatId(ctx.tipo().ID().getText()),formatId(ctx.ID(idxID).getText()),formatId(ctx.tipo().ID().getText()));
+                currentDataType.put(formatId(ctx.ID(idxID).getText()),formatId(ctx.tipo().ID().getText())); //Agrega a la declaracion de tipo distinto (nueva clase)
+            }
+            for(int idxID=0;idxID<ctx.ID().size();idxID++){
+
+            }
+
         }else{
-            currentDataType.put(idFormateado,formatId(ctx.tipo().ID().getText())); //Agrega a la declaracion de tipo distinto (nueva clase)
+            if (tipos.containsKey(var)) {
+                var = tipos.get(var);
+            } else if (var.contains("cadena[")) {
+                var = "String";
+            }
+            System.out.printf("%s ",var);
+            for(int idxID=0;idxID<ctx.ID().size();idxID++) {
+
+                if(idxID>0){
+                    System.out.print(",");
+                }
+                System.out.printf("%s ",formatId(ctx.ID(idxID).getText()));
+
+
+                String idFormateado=formatId(ctx.ID(idxID).getText());
+                if(ctx.tipo().ENTERO()!=null){//1: int,2:double,  3: boolean, 4: char, 5: string,
+                    currentDataType.put(idFormateado,"int");
+                }else if(ctx.tipo().REAL()!=null){
+                    currentDataType.put(idFormateado,"double");
+                }else if(ctx.tipo().BOOLEANO()!=null){
+                    currentDataType.put(idFormateado,"boolean");
+                }else if(ctx.tipo().CARACTER()!=null){
+                    currentDataType.put(idFormateado,"char");
+                }else if(ctx.tipo().CADENA()!=null){
+                    currentDataType.put(idFormateado,"String");
+                }
+            }
+            System.out.println(";");
         }
+
+
+
+
 
 
 
@@ -331,7 +347,7 @@ public class Traductor extends GramaticaBaseListener {
     }
     @Override
     public void exitDeclaracionV(GramaticaParser.DeclaracionVContext ctx) {
-        System.out.println(";");
+
     }
 
     @Override
@@ -431,6 +447,7 @@ public class Traductor extends GramaticaBaseListener {
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
                 case "int": //Inte input
                     System.out.println("scanner.nextInt();");
+                    printTab();
                     System.out.println("scanner.nextLine();");
                     break;
                 case "double": //Real input
