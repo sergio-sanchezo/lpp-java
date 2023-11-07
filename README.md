@@ -209,7 +209,7 @@ class Main {
 			System.out.print("bienvenido a la funcion p, digite un entero");
 			System.out.println();
 			x=scanner.nextInt();
-scanner.nextLine();
+            scanner.nextLine();
 			System.out.print("El entero digitado fue: ");
 			System.out.print(x);
 			System.out.println();
@@ -259,7 +259,7 @@ class Main {
 		public static void main(String[] args) {
 			arr[0][1][3][80]=10;
 			arr[0][1][3][81]=scanner.nextInt();
-scanner.nextLine();
+            scanner.nextLine();
 			System.out.print(arr[0][1][3][80]+arr[0][1][3][81]);
 		}
 }
