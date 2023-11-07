@@ -412,6 +412,7 @@ public class Traductor extends GramaticaBaseListener {
     public void enterIdLectura(GramaticaParser.IdLecturaContext ctx){
         printTab();
     }
+
     @Override
     public void exitIdLectura(GramaticaParser.IdLecturaContext ctx){
         String tipo;
@@ -641,6 +642,13 @@ public class Traductor extends GramaticaBaseListener {
         printTab();
         tab++;
         System.out.print("case ");
+        if(ctx.TKN_INTEGER()!=null){
+            System.out.print(formatInt(ctx.TKN_INTEGER().getText()));
+        }else if(ctx.TKN_REAL()!=null){
+            System.out.print(formatDouble(ctx.TKN_REAL().getText()));
+        }else{
+            System.out.print(ctx.getText());
+        }
     }
     @Override
     public void exitExpLiteral(GramaticaParser.ExpLiteralContext ctx){
@@ -679,13 +687,13 @@ public class Traductor extends GramaticaBaseListener {
         System.out.print("[");
 
         if(ctx.TKN_INTEGER()!=null){
-            System.out.print(ctx.TKN_INTEGER().getText());
+            System.out.print(formatInt(ctx.TKN_INTEGER().getText()));
         }
     }
     @Override
     public void enterListaIndex(GramaticaParser.ListaIndexContext ctx){
         if(ctx.TKN_INTEGER()!=null){
-            System.out.printf("][%s",ctx.TKN_INTEGER().getText());
+            System.out.printf("][%s",formatInt(ctx.TKN_INTEGER().getText()));
         }else{
             System.out.print("][");
         }
