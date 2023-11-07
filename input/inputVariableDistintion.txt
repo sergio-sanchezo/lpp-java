@@ -1,0 +1,35 @@
+/*En el siguiente ejemplo existen variables dentro de registros y funciones que se llaman x,
+ mostrando que el traductor hace una correcta distincion de las variables al interior de registros, funciones y flujo principal y*/
+registro r
+cadena[3] x
+fin registro
+registro r2
+booleano x
+fin registro
+//variables globales
+real x
+r2 instanciaRegistro2
+procedimiento p
+entero x
+inicio
+escriba "bienvenido a la funcion p, digite un entero"
+llamar nueva_linea
+lea x
+escriba "El entero digitado fue: ",x
+llamar nueva_linea
+fin
+inicio
+llamar p
+escriba "Digite un numero real"
+llamar nueva_linea
+lea x
+escriba "El numero real digitado fue ",x
+
+llamar nueva_linea
+escriba "Ingrese un valor booleano (verdadero o falso, 1 o 0) que sera el valor del atributo x de la instancia de registro r2"
+llamar nueva_linea
+lea instanciaRegistro2.x
+llamar nueva_linea
+escriba "El valor booleano ingresado fue: ",instanciaRegistro2.x
+
+fin

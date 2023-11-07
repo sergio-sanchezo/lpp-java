@@ -1,0 +1,7 @@
+//MAneja correctamente el anidamiento de matrices, así como la lectura de datos de esta
+arreglo[4,5] de arreglo[4] de arreglo[89] de entero arr
+inicio
+arr[0,1][3][80]<-10
+lea arr[0,1][3][81]
+escriba arr[0,1][3][80]+arr[0,1][3][81]
+fin

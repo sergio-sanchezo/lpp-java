@@ -1,0 +1,34 @@
+/*
+Estos ejemplos mostraran el manejo de matrices y registros anidados
+(registros con matrices como atributos (que a su vez pueden ser de otro tipo de registro...))
+*/
+registro r5
+entero num
+cadena[90] texto
+fin registro
+registro r4
+r5 registrointerno4
+fin registro
+registro r3
+r4 registrointerno3
+fin registro
+registro r2
+r3 registrointerno2
+arreglo[4,5] de arreglo[2] de r5 arrayInterno
+fin registro
+registro r
+r2 registrointerno
+fin registro
+r registroExterno
+inicio
+
+escriba "Ingrese un numero entero, es el atributo num de un registro tipo r5 dentro de un registro r4 dentro de un registro r3..."
+llamar nueva_linea
+lea registroExterno.registrointerno.registrointerno2.registrointerno3.registrointerno4.num
+escriba "El entero ingresado fue: ",registroExterno.registrointerno.registrointerno2.registrointerno3.registrointerno4.num
+llamar nueva_linea
+escriba "ahora ingrese una cadena, ese será un valor del atributo texto un elemento de un arreglo de tipo r5 al interior de un registro r2 (atributo arrayInterno), r2 que es atributo a su vez de r1"
+llamar nueva_linea
+lea registroExterno.registrointerno.arrayInterno[2,2][0].texto
+escriba "La cadena escrita fue ", registroExterno.registrointerno.arrayInterno[2,2][0].texto
+fin
