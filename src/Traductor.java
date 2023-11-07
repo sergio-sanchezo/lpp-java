@@ -124,7 +124,7 @@ public class Traductor extends GramaticaBaseListener {
             }
         }
         printTab();
-        System.out.printf("%s",ctx.ID());
+        System.out.printf("%s",formatId(ctx.ID().getText()));
         for(int j=0;j<i;j++){
             System.out.printf("[auxArrayRegister%d]",j);
         }
@@ -430,15 +430,20 @@ public class Traductor extends GramaticaBaseListener {
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
                 case "int": //Inte input
                     System.out.println("scanner.nextInt();");
+                    System.out.println("scanner.nextLine();");
                     break;
                 case "double": //Real input
-                    System.out.println("scanner.nextDouble();"); //completar
+                    System.out.println("scanner.nextDouble();");
+                    printTab();
+                    System.out.println("scanner.nextLine();"); //Limpiar Scanner
                     break;
                 case "boolean": //Boolean input
-                    System.out.println("scanner.nextBoolean();"); //completar
+                    System.out.println("scanner.nextBoolean();");
+                    printTab();
+                    System.out.println("scanner.nextLine();"); //Limpiar Scanner
                     break;
                 case "char": //Character input
-                    System.out.println("scanner.nextLine().charAt(0);"); //completar
+                    System.out.println("scanner.nextLine().charAt(0);");
                     break;
                 case "String": //String input
                     System.out.println("scanner.nextLine();");
@@ -460,15 +465,22 @@ public class Traductor extends GramaticaBaseListener {
             switch (tipo){ //1: int,2:double,  3: boolean, 4: char, 5: string,
                 case "int": //Inte input
                     System.out.println("scanner.nextInt();");
+                    printTab();
+                    System.out.println("scanner.nextLine();"); //Limpiar Scanner
                     break;
                 case "double": //Real input
-                    System.out.println("scanner.nextDouble();"); //completar
+
+                    System.out.println("scanner.nextDouble();");
+                    printTab();
+                    System.out.println("scanner.nextLine();"); //Limpiar Scanner
                     break;
                 case "boolean": //Boolean input
-                    System.out.println("scanner.nextBoolean();"); //completar
+                    System.out.println("scanner.nextBoolean();");
+                    printTab();
+                    System.out.println("scanner.nextLine();"); //Limpiar Scanner
                     break;
                 case "char": //Character input
-                    System.out.println("scanner.nextLine().charAt(0);"); //completar
+                    System.out.println("scanner.nextLine().charAt(0);");
                     break;
                 case "String": //String input
                     System.out.println("scanner.nextLine();");
